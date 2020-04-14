@@ -1,5 +1,8 @@
 IPYTHON_CONFIG := /nail/home/syedj/.ipython/profile_default
 
+.PHONY: all
+all: clean build develop
+
 .PHONY: develop-notebook
 develop-notebook: 
 	venv/bin/jupyter notebook
@@ -8,9 +11,10 @@ develop:
 	venv/bin/jupyter lab --watch
 .PHONY: build
 build: venv frontend-build
-	venv/bin/pip install -I ./extension/.
-	jupyter labextension enable sparkmonitor --user           
-	jupyter serverextension enable --py --user sparkmonitor
+	venv/bin/pip install -I .
+	jupyter labextension install         
+	jupyter labextension enable sparkmonitor          
+	jupyter serverextension enable --py sparkmonitor
 	ipython profile create && echo "c.InteractiveShellApp.extensions.append('sparkmonitor.kernelextension')" >>  $(IPYTHON_CONFIG)/ipython_kernel_config.py
 
 .PHONY: frontend-build
@@ -24,3 +28,4 @@ venv: requirements-dev.txt tox.ini
 .PHONY: clean
 clean: 
 	rm -rf venv
+	rm -rf node_modules

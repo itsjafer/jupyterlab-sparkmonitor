@@ -37,6 +37,7 @@
     "url-loader": "^0.5.9",
     "webpack": "^3.3.0"
   },
+  "style": "src/styles.css",
   "scripts": {
     "webpack": "webpack -p --config webpack.config.js",
     "webpackwatch": "webpack --watch --config webpack.config.js",
@@ -49,12 +50,15 @@
     "@jupyterlab/docregistry": "^1.2.0",
     "@jupyterlab/mainmenu": "^1.2.0",
     "@jupyterlab/notebook": "^1.2.1",
-    "@jupyterlab/services": "^4.2.0"
+    "@jupyterlab/services": "^4.2.0",
+    "jquery": "^3.4.1",
     "kuende-livestamp": "^1.1.2",
-    "moment-duration-format": "^1.3.0",
-    "plotly.js": "^1.29.0",
-    "twix": "^1.2.0",
-    "vis": "^4.20.1"
+    "moment": "^2.24.0",
+    "moment-duration-format": "^2.3.2",
+    "plotly.js": "^1.53.0",
+    "uuid": "^7.0.2",
+    "vis": "^4.21.0-EOL",
+    "vis-timeline": "^7.3.4"
   },
   "files": [
     "src"

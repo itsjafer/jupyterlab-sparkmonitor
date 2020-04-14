@@ -5,7 +5,8 @@
 
 import { KernelMessage, Kernel } from '@jupyterlab/services';
 import { NotebookListener } from './NotebookListener';
-import CellMonitor from '../js/CellMonitor';
+import CellMonitor from './CellMonitor';
+import { v4 as uuidv4 } from 'uuid';
 
 // luckily the majority of this code is logic
 // but we need to figure out communicating with the kernel
@@ -17,11 +18,30 @@ export default class SparkMonitor {
         // create our notebook listener
         this.listener = new NotebookListener(nbPanel);
 
+        // store notebookpanel as class variable
+        this.nbPanel = nbPanel;
+
         // create a dictionary of cellmonitor objects (is this needed?)
         this.cellmonitors = {};
 
         // create comm object with kernel
         this.comm = null;
+
+        // Fixes reloading the browser
+        this.startComm(nbPanel.session.kernel);
+
+        // Listen for kernel restart
+        this.nbPanel.session.kernel.statusChanged.connect((sender, status) => {
+            console.log(status);
+            switch (status) {
+                case "starting":
+                    nbPanel.session.kernel.ready.then(() =>{
+                        this.startComm(nbPanel.session.kernel);
+                    })
+                default:
+                    break;
+            }
+        })
     
         // class information
         this.data = {};
@@ -32,11 +52,6 @@ export default class SparkMonitor {
         this.numExecutors = 0;
 
         this.display_mode = "shown"; // "shown" || "hidden"
-    
-        // add an event listener for output area being cleared
-    
-        // create buttons
-    
     }
 
     // add a button to toolbar to toggle all monitoring display
@@ -52,11 +67,11 @@ export default class SparkMonitor {
     startCellMonitor(cell) {
         // remove it if it already exists
         if (this.cellmonitors[cell.id] != null) {
-            //this.cellmonitors[cell.id].removeDisplay();
+            this.cellmonitors[cell.id].removeDisplay();
         }
 
         // we have to account for when this is executed a second time
-
+        console.log(`Creating cell monitor for cell ${cell.id}`);
         this.cellmonitors[cell.id] = new CellMonitor(this, cell);
         this.display_mode = 'shown';
 
@@ -71,7 +86,7 @@ export default class SparkMonitor {
         }
     }
 
-    startComm(kernel, app) {
+    startComm(kernel) {
         this.listener.ready().then(() => {
             this.comm = kernel.connectToComm('SparkMonitor');
             this.comm.open({'msgtype': 'openfromfrontend'});
@@ -82,14 +97,14 @@ export default class SparkMonitor {
                 this.onCommClose(message);
             };
             console.log('SparkMonitor: Connection with comms established');
-        })
+        });
     }
 
     handleMessage(msg) {
         if (!msg.content.data.msgtype) {
             console.warn("SparkMonitor: Unknown message");
         }
-        //console.log(msg);
+        console.log(msg);
         if (msg.content.data.msgtype == "fromscala") {
             let data = JSON.parse(msg.content.data.msg);
             switch (data.msgtype) {
@@ -139,6 +154,9 @@ export default class SparkMonitor {
     onSparkJobStart(data) {
         // get the current running cell (i think there's an easy way to do this)
         let cell = this.listener.getActiveCell();
+        if (cell.id === "") {
+            cell.id = uuidv4();
+        }
 
         if (cell == null) {
             console.error('SparkMonitor: Job Started with no running cell');
@@ -233,7 +251,7 @@ export default class SparkMonitor {
     onSparkExecutorAdded(data) {
         this.totalCores = data.totalCores;
         this.numExecutors += 1;
-        let cell = currentcell.getRunningCell()
+        let cell = this.listener.getActiveCell();
         if (cell != null) {
             let cellmonitor = this.getCellMonitor(cell.cell_id);
             if (cellmonitor) cellmonitor.onSparkExecutorAdded(data);
@@ -243,7 +261,7 @@ export default class SparkMonitor {
     onSparkExecutorRemoved(data) {
         this.totalCores = data.totalCores;
         this.numExecutors -= 1;
-        let cell = currentcell.getRunningCell()
+        let cell = this.listener.getActiveCell();
         if (cell != null) {
             let cellmonitor = this.getCellMonitor(cell.cell_id);
             if (cellmonitor) cellmonitor.onSparkExecutorRemoved(data);

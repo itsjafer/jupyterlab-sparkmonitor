@@ -13,3 +13,5 @@ extension/docs/
 venv/
 .vscode/settings.json
 node_modules
+scalalistener/project/*
+scalalistener/target/*

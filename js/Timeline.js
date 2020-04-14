@@ -157,7 +157,7 @@ Timeline.prototype.refreshTimeline = function (redraw) {
                 end: date
             });
         });
-        that.setRanges(that.firstJobStart, that.latestTime, false, true);
+        that.setRanges(that.firstJobStart, that.latestTime, false, true, false);
     }
     that.timelineData1.flush()
     that.timelineData2.flush()

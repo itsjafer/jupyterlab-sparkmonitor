@@ -13,8 +13,6 @@ export class NotebookListener {
     async init() {
         await this._notebookPanel.revealed;
         this._notebook = this._notebookPanel.content;
-        console.log("Notebook panel", this._notebookPanel);
-        console.log("Notebook", this._notebook);
         this.listen();
         this._ready.resolve(undefined);
     }
@@ -29,6 +27,7 @@ export class NotebookListener {
 
     // We need to be able to get the currently running cell
     listen() {
+
         this._notebook.model.cells.changed.connect(
             (sender, data) => {
             // to avoid duplicates during load wait til load is complete
@@ -40,17 +39,9 @@ export class NotebookListener {
             var oldValues = data.oldValues;
             console.log(data);
             switch (data.type) {
-                case "add":
-                // this._addNewCells(newIndex, newValues);
-                break;
                 case "remove":
                 // this._removeCells(oldIndex, oldValues);
-                break;
-                case "move":
-                // this._cellsMoved(oldIndex, newIndex, newValues);
-                break;
-                case "set":
-                // this._cellTypeChanged(oldIndex, newIndex, oldValues);
+                // we'll need to remove the relevant cell monitor
                 break;
                 default:
                 log("cell list changed!!!!", sender, data);
@@ -60,6 +51,8 @@ export class NotebookListener {
         );
 
         this._notebook.activeCellChanged.connect((_, cell) => {
+            console.log(cell);
+            this.activeCell = cell;
             //this.focusCell(cell);
         });
 
