@@ -8,11 +8,11 @@ develop-notebook:
 	venv/bin/jupyter notebook
 
 develop:
-	source venv/bin/activate
+	. venv/bin/activate
 	venv/bin/jupyter lab --watch
 .PHONY: build
 build: venv frontend-build
-	source venv/bin/activate
+	. venv/bin/activate
 	venv/bin/pip install -I .
 	jupyter labextension install
 	jupyter labextension enable sparkmonitor
