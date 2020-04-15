@@ -30,6 +30,7 @@ export default class SparkMonitor {
         this.nbPanel.session.kernel.statusChanged.connect((_, status) => {
             if (status === 'starting') {
                 this.nbPanel.session.kernel.ready.then(() => {
+                    this.listener.cellReexecuted = false;
                     this.startComm(this.nbPanel.session.kernel);
                 });
             }

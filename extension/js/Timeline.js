@@ -9,6 +9,9 @@ import 'vis-timeline/styles/vis-timeline-graph2d.css';
 import './timeline.css'; // Custom Styles
 import taskUI from './taskdetails'; // Module for displaying popup when clicking on a task
 import $ from 'jquery'; // jQuery to manipulate the DOM
+import 'jquery-ui-bundle';
+import 'jquery-ui-bundle/jquery-ui.css';
+
 
 export default class JobTimeline {
     /**

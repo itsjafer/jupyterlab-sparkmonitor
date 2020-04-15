@@ -46,6 +46,8 @@ SparkMonitor is an extension for Jupyter Lab that enables the live monitoring of
 
 ```bash
 cd extension
+make venv
+source venv/bin/activate
 make build
 make develop
 ```
