@@ -35,7 +35,7 @@ export default class NotebookListener {
         NotebookActions.executed.connect((_, args) => {
             // can get execution signals from other notebooks
             if (args.notebook.id === this.notebook.id) {
-                const cell = args.cell;
+                const { cell } = args;
 
                 this.cellReexecuted = cell === this.activeCell;
                 this.activeCell = cell;

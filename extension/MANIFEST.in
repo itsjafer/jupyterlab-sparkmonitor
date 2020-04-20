@@ -1,4 +1,3 @@
 graft sparkmonitor/static
 recursive-include sparkmonitor *.jar
 include VERSION
-include requirements-bootstrap.txt

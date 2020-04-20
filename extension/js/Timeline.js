@@ -7,11 +7,10 @@
 import { DataSet, Timeline } from 'vis-timeline/standalone';
 import 'vis-timeline/styles/vis-timeline-graph2d.css';
 import './timeline.css'; // Custom Styles
-import taskUI from './taskdetails'; // Module for displaying popup when clicking on a task
 import $ from 'jquery'; // jQuery to manipulate the DOM
+import taskUI from './taskdetails'; // Module for displaying popup when clicking on a task
 import 'jquery-ui-bundle';
 import 'jquery-ui-bundle/jquery-ui.css';
-
 
 export default class JobTimeline {
     /**
@@ -264,17 +263,35 @@ export default class JobTimeline {
                 }
             });
             // Make dragging one timeline drag all timelines - ie jobs, stages and tasks should move together
-            this.timeline1.on('rangechange', (properties) => {
-                if (properties.byUser) this.timeline2.setWindow(properties.start, properties.end, { animation: false });
-                if (properties.byUser) this.timeline3.setWindow(properties.start, properties.end, { animation: false });
+            this.timeline1.on('rangechange', properties => {
+                if (properties.byUser)
+                    this.timeline2.setWindow(properties.start, properties.end, {
+                        animation: false,
+                    });
+                if (properties.byUser)
+                    this.timeline3.setWindow(properties.start, properties.end, {
+                        animation: false,
+                    });
             });
-            this.timeline2.on('rangechange', (properties) => {
-                if (properties.byUser) this.timeline1.setWindow(properties.start, properties.end, { animation: false });
-                if (properties.byUser) this.timeline3.setWindow(properties.start, properties.end, { animation: false });
+            this.timeline2.on('rangechange', properties => {
+                if (properties.byUser)
+                    this.timeline1.setWindow(properties.start, properties.end, {
+                        animation: false,
+                    });
+                if (properties.byUser)
+                    this.timeline3.setWindow(properties.start, properties.end, {
+                        animation: false,
+                    });
             });
-            this.timeline3.on('rangechange', (properties) => {
-                if (properties.byUser) this.timeline1.setWindow(properties.start, properties.end, { animation: false });
-                if (properties.byUser) this.timeline2.setWindow(properties.start, properties.end, { animation: false });
+            this.timeline3.on('rangechange', properties => {
+                if (properties.byUser)
+                    this.timeline1.setWindow(properties.start, properties.end, {
+                        animation: false,
+                    });
+                if (properties.byUser)
+                    this.timeline2.setWindow(properties.start, properties.end, {
+                        animation: false,
+                    });
             });
             this.timeline1.redraw();
             this.timeline2.redraw();
@@ -293,18 +310,18 @@ export default class JobTimeline {
             this.timeline3.on('rangechanged', onuserdrag);
             // Display corresponding popups when clicking on a job/stage/task
             if (!this.cellmonitor.allcompleted) this.registerRefresher();
-            this.timeline3.on('select', (properties) => {
+            this.timeline3.on('select', properties => {
                 if (properties.items.length) {
                     taskUI.show(this.timelineData3.get(properties.items[0]));
                 }
             });
-            this.timeline1.on('select', (properties) => {
+            this.timeline1.on('select', properties => {
                 if (properties.items.length) {
                     const name = properties.items[0];
                     this.cellmonitor.openSparkUI(`jobs/job/?id=${name}`);
                 }
             });
-            this.timeline2.on('select', (properties) => {
+            this.timeline2.on('select', properties => {
                 if (properties.items.length) {
                     const name = properties.items[0];
                     this.cellmonitor.openSparkUI(`stages/stage/?id=${name}&attempt=0`);
@@ -365,7 +382,7 @@ export default class JobTimeline {
             .html(html)
             .addClass('taskbardiv')
             .attr('data-taskid', data.taskId);
-        const metrics = data.metrics;
+        const { metrics } = data;
         const svg = element.find('.taskbarsvg');
         svg.find('.scheduler-delay-proportion')
             .attr('x', `${metrics.schedulerDelayProportionPos}%`)

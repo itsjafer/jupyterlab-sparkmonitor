@@ -1,5 +1,5 @@
 repos:
--   repo: git@git.yelpcorp.com:mirrors/pre-commit/pre-commit-hooks
+-   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.4.0
     hooks:
     -   id: check-added-large-files
@@ -15,7 +15,7 @@ repos:
     -   id: fix-encoding-pragma
     -   id: name-tests-test
     -   id: trailing-whitespace
--   repo: git@git.yelpcorp.com:mirrors/asottile/reorder_python_imports
+-   repo: https://github.com/asottile/reorder_python_imports
     rev: v0.3.5
     hooks:
     -   id: reorder-python-imports
@@ -23,7 +23,7 @@ repos:
             '--add-import', 'from __future__ import absolute_import',
             '--add-import', 'from __future__ import unicode_literals',
         ]
--   repo: git@git.yelpcorp.com:mirrors/asottile/pyupgrade
+-   repo: https://github.com/asottile/pyupgrade
     rev: v1.2.0
     hooks:
     -   id: pyupgrade

@@ -1,3 +1,4 @@
+.vscode/settings.json
 *.pyc
 *.log
 **/.ipynb_checkpoints/
@@ -9,11 +10,6 @@ extension/build/
 extension/node_modules/
 extension/sparkmonitor/static/
 extension/docs/
-extension/node_modules/*
-node_modules
-node_modules/*
-.vscode/settings.json
-extension/venv/*
+extension/lib/
 extension/venv
-scalalistener/*
-venv/*
+extension/.ipython

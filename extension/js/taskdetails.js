@@ -13,7 +13,7 @@ import moment from 'moment'; // moment to format date objects
  * @param {Object} item - data about the task.
  */
 function fillData(element, item) {
-    const data = item.data;
+    const { data } = item;
     element.find('.data-taskid').text(data.taskId);
     element.find('.data-stageid').text(data.stageId);
     element.find('.data-host').text(data.host);
@@ -44,7 +44,7 @@ function fillData(element, item) {
         element.find('.data-error').text(data.errorMessage);
     }
     if (data.status === 'SUCCESS' || data.status === 'FAILED' || data.status === 'KILLED') {
-        const metrics = data.metrics;
+        const { metrics } = data;
         element.find('.metricdata').show();
         const e = element.find('.legend-area');
         const svg = element.find('.taskbarsvg');
@@ -86,148 +86,133 @@ function fillData(element, item) {
     }
 }
 
+function createRect(className, x, y, height, width) {
+    const rect = document.createElement('rect');
+    rect.className = className;
+    rect.setAttribute('x', x);
+    rect.setAttribute('y', y);
+    rect.setAttribute('height', height);
+    rect.setAttribute('width', width);
+
+    return rect;
+}
+
 /**
  * Shows a popup dialog with details of a task.
  * @param {Object} item - data about the task.
  */
 function showTaskDetails(item) {
-    const taskHTML = `
-    <div class="taskdetails">
-        <div class="tasktitle">Task <span class="data-taskid">5</span><span class="tasktitlestage">from Stage  <span class="data-stageid">6</span></span>
-        </div>
-        <div class="metricdata">
-        <svg class="taskbarsvg">
-            <rect class="scheduler-delay-proportion" x="0%" y="0px" height="100%" width="10%"></rect>
-            <rect class="deserialization-time-proportion" x="10%" y="0px" height="100%" width="10%"></rect>
-            <rect class="shuffle-read-time-proportion" x="20%" y="0px" height="100%" width="20%"></rect>
-            <rect class="executor-runtime-proportion" x="40%" y="0px" height="100%" width="10%"></rect>
-            <rect class="shuffle-write-time-proportion" x="50%" y="0px" height="100%" width="10%"></rect>
-            <rect class="serialization-time-proportion" x="60%" y="0px" height="100%" width="20%"></rect>
-            <rect class="getting-result-time-proportion" x="80%" y="0px" height="100%" width="20%"></rect>
-        </svg>
-        </div>
-        <div class="legend-area metricdata">
-        Metrics:
-        <table>
-            <thead>
-            <tr>
-                <th></th>
-                <th>Phase</th>
-                <th>Time Taken</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>
-                <svg>
-                    <rect x="0px" y="0px" width="10px" height="10px" class="scheduler-delay-proportion"></rect>
-                </svg>
-                </td>
-                <td>Scheduler Delay</td>
-                <td class="scheduler-delay">0</td>
-            </tr>
-            <tr class="finish">
-                <td>
-                <svg>
-                    <rect x="0px" y="0px" width="10px" height="10px" class="deserialization-time-proportion"></rect>
-                </svg>
-                </td>
-                <td>Task Deserialization Time</td>
-                <td class="deserialization-time">0</td>
-            </tr>
-            <tr class="finish">
-                <td>
-                <svg>
-                    <rect x="0px" y="0px" width="10px" height="10px" class="shuffle-read-time-proportion"></rect>
-                </svg>
-                </td>
-                <td>Shuffle Read Time</td>
-                <td class="shuffle-read-time">0</td>
-            </tr>
-            <tr>
-                <td>
-                <svg>
-                    <rect x="0px" y="0px" width="10px" height="10px" class="executor-runtime-proportion"></rect>
-                </svg>
-                </td>
-                <td>Executor Computing Time</td>
-                <td class="executor-runtime">0</td>
-            </tr>
-            <tr>
-                <td>
-                <svg>
-                    <rect x="0px" y="0px" width="10px" height="10px" class="shuffle-write-time-proportion"></rect>
-                </svg>
-                </td>
-                <td>Shuffle Write Time</td>
-                <td class="shuffle-write-time">0</td>
-            </tr>
-            <tr>
-                <td>
-                <svg>
-                    <rect x="0px" y="0px" width="10px" height="10px" class="serialization-time-proportion"></rect>
-                </svg>
-                </td>
-                <td>Result Serialization Time</td>
-                <td class="serialization-time">0</td>
-            </tr>
-            <tr>
-                <td>
-                <svg>
-                    <rect x="0px" y="0px" width="10px" height="10px" class="getting-result-time-proportion"></rect>
-                </svg>
-                </td>
-                <td>Getting Result Time</td>
-                <td class="getting-result-time">0</td>
-            </tr>
-            </tbody>
-        </table>
-        </div>
-        Other Details:
-        <table>
-        <thead>
-            <tr>
-            <th>Parameter</th>
-            <th>Value</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-            <td>Launch Time</td>
-            <td class="data-launchtime">0</td>
-            </tr>
-            <tr class="finish">
-            <td>Finish Time</td>
-            <td class="data-finishtime">0</td>
-            </tr>
-            <tr class="finish">
-            <td>Duration</td>
-            <td class="data-duration">0</td>
-            </tr>
-            <tr>
-            <td>Executor Id</td>
-            <td class="data-executorid">0</td>
-            </tr>
-            <tr>
-            <td>Host</td>
-            <td class="data-host">0</td>
-            </tr>
-            <tr>
-            <td>Status</td>
-            <td class="data-status">nil</td>
-            </tr>
-            <tr class="error">
-            <td>Error Message</td>
-            <td>
-                <pre class="data-error"></pre>
-            </td>
-            </tr>
-        </tbody>
-        </table>
-    </div>
-    `;
+    const taskdetails = document.createElement('div');
+    taskdetails.className = 'taskdetails';
+    const tasktitle = document.createElement('div');
+    tasktitle.className = 'tasktitle';
+    tasktitle.innerHTML = `Task <span class="data-taskid">5</span><span class="tasktitlestage">from Stage  <span class="data-stageid">6</span></span>`;
+    const metricdata = document.createElement('div');
+    metricdata.className = 'metricdata';
+    const taskbarsvg = document.createElement('svg');
+    taskbarsvg.className = 'taskbarsvg';
 
-    const div = $('<div></div>').html(taskHTML);
+    const scheduler_delay_proportion = createRect('scheduler-delay-proportion', '0%', '0px', '100%', '10%');
+    const deserialization_time_proportion = createRect('deserialization-time-proportion', '10%', '0px', '100%', '10%');
+    const shuffle_read_time_proportion = createRect('shuffle-read-time-proportion', '20%', '0px', '100%', '20%');
+    const executor_runtime_proportion = createRect('executor-runtime-proportion', '40%', '0px', '100%', '10%');
+    const shuffle_write_time_proportion = createRect('shuffle-write-time-proportion', '50%', '0px', '100%', '10%');
+    const serialization_time_proportion = createRect('serialization-time-proportion', '60%', '0px', '100%', '20%');
+    const getting_result_time_proportion = createRect('getting-result-time-proportion', '80%', '0px', '100%', '20%');
+
+    taskbarsvg.appendChild(scheduler_delay_proportion);
+    taskbarsvg.appendChild(deserialization_time_proportion);
+    taskbarsvg.appendChild(shuffle_read_time_proportion);
+    taskbarsvg.appendChild(executor_runtime_proportion);
+    taskbarsvg.appendChild(shuffle_write_time_proportion);
+    taskbarsvg.appendChild(serialization_time_proportion);
+    taskbarsvg.appendChild(getting_result_time_proportion);
+    metricdata.appendChild(taskbarsvg);
+    tasktitle.appendChild(metricdata);
+
+    const legendArea = document.createElement('div');
+    legendArea.classList.add('legend-area');
+    legendArea.classList.add('metricdata');
+    legendArea.insertAdjacentText('afterbegin', 'Metrics:');
+    const table = document.createElement('table');
+    const tableHead = document.createElement('thead');
+    tableHead.innerHTML = `<tr>
+        <th></th>
+        <th>Phase</th>
+        <th>Time Taken</th>
+    </tr>`;
+
+    const tableBody = document.createElement('tbody');
+    const classes = [
+        'scheduler-delay',
+        'deserialization-time',
+        'shuffle-read-time',
+        'executor-runtime',
+        'shuffle-write-time',
+        'serialization-time',
+        'getting-result-time',
+    ];
+
+    for (let i = 0; i < classes.length; i += 1) {
+        const row = document.createElement('tr');
+        const svgCell = document.createElement('td');
+        const svg = document.createElement('svg');
+        svgCell.innerHTML = `<rect x="0px" y="0px" width="10px" height="10px" class="${classes[i]}-proportion"></rect>`;
+        const className = document.createElement('td');
+        className.innerText = classes[i].replace(/-/g, ' ');
+        const valueCell = document.createElement('td');
+        valueCell.className = classes[i];
+        valueCell.innerText = '0';
+
+        svgCell.appendChild(svg);
+        row.appendChild(svgCell);
+        row.appendChild(className);
+        row.appendChild(valueCell);
+        tableBody.appendChild(row);
+    }
+
+    table.appendChild(tableHead);
+    table.appendChild(tableBody);
+    legendArea.appendChild(table);
+
+    taskdetails.appendChild(tasktitle);
+    taskdetails.appendChild(legendArea);
+
+    taskdetails.insertAdjacentText('beforeend', 'Other Details:');
+
+    const otherTable = document.createElement('table');
+    const otherTableHead = document.createElement('thead');
+    otherTableHead.innerHTML = `<tr>
+        <th>Parameter</th>
+        <th>Value</th>
+    </tr>`;
+
+    const otherTableBody = document.createElement('tbody');
+    const otherClasses = ['Launch Time', 'Finish Time', 'Duration', 'Executor Id', 'Host', 'Status'];
+
+    for (let i = 0; i < otherClasses.length; i += 1) {
+        const row = document.createElement('tr');
+        const nameCell = document.createElement('td');
+        nameCell.innerText = otherClasses[i];
+        const valueCell = document.createElement('td');
+        valueCell.className = `data-${otherClasses[i].toLowerCase().replace(/\s/g, '')}`;
+        valueCell.innerText = '0';
+
+        row.appendChild(nameCell);
+        row.appendChild(valueCell);
+        otherTableBody.appendChild(row);
+    }
+
+    const errorRow = document.createElement('tr');
+    errorRow.className = 'error';
+    errorRow.innerHTML = `<td>Error Message</td><td> <pre class="data-error"></pre></td>`;
+    otherTableBody.appendChild(errorRow);
+
+    otherTable.appendChild(otherTableHead);
+    otherTable.appendChild(otherTableBody);
+    taskdetails.appendChild(otherTable);
+
+    const div = $(taskdetails);
     fillData(div, item);
     const options = {
         title: 'Task Details',

@@ -9,12 +9,11 @@ import './styles.css'; // CSS styles
 import './jobtable.css'; // CSS specific to job table
 import moment from 'moment'; // For handling durations
 import 'moment-duration-format'; // Plugin for moment to format durations to strings
-import JobTimeline from './Timeline';
-import TaskChart from './TaskChart';
-import 'kuende-livestamp';   // Used for displaying auto-updating timestamps like '5 mins ago'
 import { ServerConnection } from '@jupyterlab/services';
 import { URLExt } from '@jupyterlab/coreutils';
-
+import JobTimeline from './Timeline';
+import TaskChart from './TaskChart';
+import 'kuende-livestamp'; // Used for displaying auto-updating timestamps like '5 mins ago'
 
 export default class CellMonitor {
     /**
@@ -68,26 +67,49 @@ export default class CellMonitor {
         this.template = document.createElement('div');
         this.template.innerHTML = `
             <div class="CellMonitor pm">
-                <div class="title"><span class="titleleft">
-                        <span class="tbitem titlecollapse "><span class="headericon"></span></span>
+                <div class="title">
+                <span class="titleleft">
+                    <span class="tbitem titlecollapse ">
+                        <span class="headericon"></span>
+                    </span>
                     <span class="tbitem badgecontainer">
                         <b>Apache Spark: </b>
-                        <span class="badgeexecutor"><span class="badgeexecutorcount">0</span> EXECUTORS</span>
-                    <span class="badgeexecutorcores"><span class="badgeexecutorcorescount">0</span> CORES</span>
-                    <b>Jobs:</b>
-                    <span class="badges"><span class=badgerunning><span class="badgerunningcount">0</span> RUNNING</span>
-                    <span class=badgecompleted><span class="badgecompletedcount">0</span> COMPLETED</span><span class=badgefailed><span class="badgefailedcount">0</span>    FAILED</span>
+                        <span class="badgeexecutor">
+                            <span class="badgeexecutorcount">0</span> EXECUTORS
+                        </span>
+                        <span class="badgeexecutorcores">
+                            <span class="badgeexecutorcorescount">0</span> CORES
+                        </span>
+                        <b>Jobs:</b>
+                        <span class="badges">
+                            <span class=badgerunning>
+                                <span class="badgerunningcount">0</span> RUNNING
+                            </span>
+                            <span class=badgecompleted>
+                                <span class="badgecompletedcount">0</span> COMPLETED
+                            </span>
+                            <span class=badgefailed>
+                                <span class="badgefailedcount">0</span>    FAILED
+                            </span>
+                        </span>
                     </span>
+                </span>
+                <span class="titleright">
+                    <span class="tabbuttons">
+                        <span class=" jobtabletabbutton tabbutton" dt="tooltiptop" title="Jobs">
+                            <span class="jobtabbuttonicon tabbuttonicon"></span>
+                        </span>
+                        <span class=" taskviewtabbutton tabbutton" dt="tooltiptop" title="Tasks">
+                            <span class="taskviewtabbuttonicon tabbuttonicon"></span>
+                        </span>
+                        <span class=" timelinetabbutton tabbutton" dt="tooltiptop" title="Event Timeline">
+                            <span class="timelinetabbuttonicon tabbuttonicon"></span>
+                        </span>
+                        <span class="sparkuitabbutton tabbutton" dt="tooltiptop" title="Open the Spark UI">
+                            <span class="sparkuitabbuttonicon tabbuttonicon"></span>
+                        </span>
                     </span>
-                    </span>
-                    <span class="titleright">
-                        <span class="tabbuttons">
-                        <span class=" jobtabletabbutton tabbutton" dt="tooltiptop" title="Jobs"><span class="jobtabbuttonicon tabbuttonicon"></span></span>
-                    <span class=" taskviewtabbutton tabbutton" dt="tooltiptop" title="Tasks"><span class="taskviewtabbuttonicon tabbuttonicon"></span></span>
-                    <span class=" timelinetabbutton tabbutton" dt="tooltiptop" title="Event Timeline"><span class="timelinetabbuttonicon tabbuttonicon"></span></span>
-                    <span class="sparkuitabbutton tabbutton" dt="tooltiptop" title="Open the Spark UI"><span class="sparkuitabbuttonicon tabbuttonicon"></span></span>
-                    </span>
-                    </span>
+                </span>
                 </div>
 
                 <div class="content">
@@ -112,26 +134,28 @@ export default class CellMonitor {
             `;
     }
 
-    openSparkUI(url) {
+    static openSparkUI(url) {
         const setting = ServerConnection.makeSettings();
-        if (!url) url = '';
 
-        let iframe = $(`<div style="overflow:hidden">
-                        <iframe src="${URLExt.join(setting.baseUrl, 'sparkmonitor', url)}" frameborder="0" scrolling="yes" class="sparkuiframe">
+        const iframe = $(`<div style="overflow:hidden">
+                        <iframe src="${URLExt.join(
+                            setting.baseUrl,
+                            'sparkmonitor',
+                            url || '',
+                        )}" frameborder="0" scrolling="yes" class="sparkuiframe">
                         </iframe>
                         </div>`);
         iframe.find('.sparkuiframe').css('background-repeat', 'no-repeat');
-        iframe.find('.sparkuiframe').css('background-position', "50% 50%");
+        iframe.find('.sparkuiframe').css('background-position', '50% 50%');
         iframe.find('.sparkuiframe').width('100%');
         iframe.find('.sparkuiframe').height('100%');
         iframe.dialog({
-            title: "Spark UI 127.0.0.1:4040",
+            title: 'Spark UI 127.0.0.1:4040',
             width: 1000,
             height: 500,
             autoResize: false,
-            dialogClass: "sparkui-dialog"
+            dialogClass: 'sparkui-dialog',
         });
-
     }
 
     /** Creates and renders the display below the cell. */
@@ -150,7 +174,9 @@ export default class CellMonitor {
             element.find('.closebutton').click(() => {
                 this.removeDisplay();
             });
-            element.find('.sparkuitabbutton').click(() => { this.openSparkUI(''); });
+            element.find('.sparkuitabbutton').click(() => {
+                CellMonitor.openSparkUI('');
+            });
 
             element.find('.titlecollapse').click(() => {
                 if (this.view !== 'hidden') {

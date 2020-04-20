@@ -3,9 +3,9 @@
  * @module SparkMonitor
  */
 
+import { v4 as uuidv4 } from 'uuid';
 import CellMonitor from './CellMonitor'; // CellMonitor object constructor
 import NotebookListener from './NotebookListener'; // Module to detect currently running cell
-import { v4 as uuidv4 } from 'uuid';
 
 export default class SparkMonitor {
     /**
@@ -99,7 +99,7 @@ export default class SparkMonitor {
      * @param {CodeCell} cell - The Jupyter CodeCell instance
      */
     stopCellMonitor(id) {
-        if (this.cellmonitors[id] !== null) {
+        if (this.cellmonitors[id] !== undefined || this.cellmonitors[id] !== null) {
             this.cellmonitors[id].removeDisplay();
             this.cellmonitors[id] = null;
             delete this.cellmonitors[id];
@@ -181,7 +181,7 @@ export default class SparkMonitor {
                 this.handleMessage(message);
             };
             this.comm.onClose = message => {
-                this.onCommClose(message);
+                SparkMonitor.onCommClose(message);
             };
             console.log('SparkMonitor: Connection with comms established');
         });
@@ -380,7 +380,7 @@ export default class SparkMonitor {
                     this.onSparkApplicationStart(data);
                     break;
                 case 'sparkApplicationEnd':
-                    this.onSparkApplicationEnd(data);
+                    SparkMonitor.onSparkApplicationEnd(data);
                     break;
                 case 'sparkExecutorAdded':
                     this.onSparkExecutorAdded(data);

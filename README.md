@@ -42,7 +42,7 @@ SparkMonitor is an extension for Jupyter Lab that enables the live monitoring of
 </tr>
 </table>
 
-## Quick Installation
+## Quick Development
 
 ```bash
 cd extension
