@@ -51,3 +51,14 @@ source venv/bin/activate
 make build
 make develop
 ```
+
+## Installation
+
+```bash
+jupyter labextension install jupyterlab_sparkmonitor # install the jupyterlab extension
+pip install jupyterlab-sparkmonitor # install the server/kernel extension
+jupyter serverextension enable --py jupyterlab-sparkmonitor
+ipython profile create --ipython-dir=.ipython # set up ipython locally
+echo "c.InteractiveShellApp.extensions.append('sparkmonitor.kernelextension')" >>  .ipython/profile_default/ipython_kernel_config.py
+IPYTHONDIR=.ipython jupyter lab --watch # run jupyter lab
+```

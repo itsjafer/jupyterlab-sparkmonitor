@@ -3,7 +3,8 @@
  *
  * @module module
  */
-
+import 'jquery-ui-bundle';
+import 'jquery-ui-bundle/jquery-ui.css';
 import { INotebookTracker } from '@jupyterlab/notebook';
 import SparkMonitor from './SparkMonitor';
 

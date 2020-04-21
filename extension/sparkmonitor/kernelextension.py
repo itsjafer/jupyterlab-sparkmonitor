@@ -12,6 +12,8 @@ import os
 import socket
 from threading import Thread
 
+import pkg_resources
+
 ipykernel_imported = True
 spark_imported = True
 try:
@@ -210,7 +212,6 @@ def configure(conf):
     conf.set('spark.extraListeners',
              'sparkmonitor.listener.JupyterSparkMonitorListener')
     # jarpath = os.path.abspath(os.path.dirname(__file__)) + '/listener.jar'
-    import pkg_resources
     jarpath = pkg_resources.resource_filename(__name__, '/listener.jar')
     logger.info('Adding jar from %s ', jarpath)
     print('JAR PATH:' + jarpath)

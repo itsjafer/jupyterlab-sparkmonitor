@@ -4,13 +4,13 @@
  * @module Timeline
  */
 
+import 'jquery-ui-bundle';
+import 'jquery-ui-bundle/jquery-ui.css';
 import { DataSet, Timeline } from 'vis-timeline/standalone';
 import 'vis-timeline/styles/vis-timeline-graph2d.css';
 import './timeline.css'; // Custom Styles
 import $ from 'jquery'; // jQuery to manipulate the DOM
 import taskUI from './taskdetails'; // Module for displaying popup when clicking on a task
-import 'jquery-ui-bundle';
-import 'jquery-ui-bundle/jquery-ui.css';
 
 export default class JobTimeline {
     /**
