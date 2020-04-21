@@ -1,23 +1,9 @@
-[![Build Status](https://travis-ci.org/krishnan-r/sparkmonitor.svg?branch=master)](https://travis-ci.org/krishnan-r/sparkmonitor)
-# Spark Monitor - An extension for Jupyter Notebook
+# Spark Monitor - An extension for Jupyter Lab
 
-
-## [Google Summer of Code - Final Report](https://krishnan-r.github.io/sparkmonitor/) 
-
-<table>
-<tr>
-<td><a href="https://summerofcode.withgoogle.com/projects/#4603184614998016"><img src="https://user-images.githubusercontent.com/6822941/29750351-e95e7b1c-8b5b-11e7-9f6b-b25b69f7353a.png" height="100"/></td>
-<td><a href="http://hepsoftwarefoundation.org/activities/gsoc.html"><img src="https://user-images.githubusercontent.com/6822941/29750350-e956b512-8b5b-11e7-9e34-4e3a5be9d37f.png" height="100"/></td>
-
-<td><a href="https://user-images.githubusercontent.com/6822941/29782585-c788e2d6-8c3a-11e7-96bd-9568c6fb9039.png"><img src="https://user-images.githubusercontent.com/6822941/29782585-c788e2d6-8c3a-11e7-96bd-9568c6fb9039.png" height="100"/></td>
-
-
-</tr>
-</table>
-
-For the google summer of code final report of this project [click here](https://krishnan-r.github.io/sparkmonitor/)  
+This project was originally written by krishnan-r as a Google Summer of Code project for Jupyter Notebook. [Check his website out here.](https://krishnan-r.github.io/sparkmonitor/) .
 
 ## About
+
 <table>
 <tr>
 <td><a href="http://jupyter.org/"><img src="https://user-images.githubusercontent.com/6822941/29750386-872556fe-8b5c-11e7-95e1-42b12d709017.png" height="50"/></a></td>
@@ -27,20 +13,21 @@ For the google summer of code final report of this project [click here](https://
 <td><a href="https://user-images.githubusercontent.com/6822941/29601568-d5e42934-87f9-11e7-9780-3cd3a0d8d86b.png" title="The SparkMonitor Extension."><img src="https://user-images.githubusercontent.com/6822941/29601568-d5e42934-87f9-11e7-9780-3cd3a0d8d86b.png" height="80"/></a></td>
 </tr>
 </table>
-SparkMonitor is an extension for Jupyter Notebook that enables the live monitoring of Apache Spark Jobs spawned from a notebook. The extension provides several features to monitor and debug a Spark job from within the notebook interface itself. <br> 
+SparkMonitor is an extension for Jupyter Lab that enables the live monitoring of Apache Spark Jobs spawned from a notebook. The extension provides several features to monitor and debug a Spark job from within the notebook interface itself. <br>
 
-***
+---
 
 ![jobdisplay](https://user-images.githubusercontent.com/6822941/29753710-ff8849b6-8b94-11e7-8f9c-bdc59bf72143.gif)
 
 ## Features
-* Automatically displays a live monitoring tool below cells that run Spark jobs in a Jupyter notebook
-* A table of jobs and stages with progressbars
-* A timeline which shows jobs, stages, and tasks
-* A graph showing number of active tasks & executor cores vs time
-* A notebook server extension that proxies the Spark UI and displays it in an iframe popup for more details
-* For a detailed list of features see the use case [notebooks](https://krishnan-r.github.io/sparkmonitor/#common-use-cases-and-tests)
-* [How it Works](https://krishnan-r.github.io/sparkmonitor/how.html)
+
+- Automatically displays a live monitoring tool below cells that run Spark jobs in a Jupyter notebook
+- A table of jobs and stages with progressbars
+- A timeline which shows jobs, stages, and tasks
+- A graph showing number of active tasks & executor cores vs time
+- A notebook server extension that proxies the Spark UI and displays it in an iframe popup for more details
+- For a detailed list of features see the use case [notebooks](https://krishnan-r.github.io/sparkmonitor/#common-use-cases-and-tests)
+- [How it Works](https://krishnan-r.github.io/sparkmonitor/how.html)
 
 <table>
 <tr>
@@ -55,23 +42,23 @@ SparkMonitor is an extension for Jupyter Notebook that enables the live monitori
 </tr>
 </table>
 
+## Quick Development
 
-## Quick Installation
-```bash 
-pip install sparkmonitor
-jupyter nbextension install sparkmonitor --py --user --symlink 
-jupyter nbextension enable sparkmonitor --py --user            
-jupyter serverextension enable --py --user sparkmonitor
-ipython profile create && echo "c.InteractiveShellApp.extensions.append('sparkmonitor.kernelextension')" >>  $(ipython profile locate default)/ipython_kernel_config.py
-```
-#### For more detailed instructions [click here](https://krishnan-r.github.io/sparkmonitor/install.html)
-#### To do a quick test of the extension:
 ```bash
-docker run -it -p 8888:8888 krishnanr/sparkmonitor
+cd extension
+make venv
+source venv/bin/activate
+make build
+make develop
 ```
 
-## Integration with ROOT and SWAN
-At CERN, the SparkMonitor extension would find two main use cases:
-* Distributed analysis with [ROOT](https://root.cern.ch/) and Apache Spark using the DistROOT module. [Here](https://krishnan-r.github.io/sparkmonitor/usecase_distroot.html) is an example demonstrating this use case.
-* Integration with [SWAN](https://swan.web.cern.ch/), A service for web based analysis, via a modified [container image](https://github.com/krishnan-r/sparkmonitorhub) for SWAN user sessions.
+## Installation
 
+```bash
+jupyter labextension install jupyterlab_sparkmonitor # install the jupyterlab extension
+pip install jupyterlab-sparkmonitor # install the server/kernel extension
+jupyter serverextension enable --py jupyterlab-sparkmonitor
+ipython profile create --ipython-dir=.ipython # set up ipython locally
+echo "c.InteractiveShellApp.extensions.append('sparkmonitor.kernelextension')" >>  .ipython/profile_default/ipython_kernel_config.py
+IPYTHONDIR=.ipython jupyter lab --watch # run jupyter lab
+```

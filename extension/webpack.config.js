@@ -1,19 +1,35 @@
 var path = require('path');
+var webpack = require('webpack');
 
 module.exports = {
     entry: {
-        module: './js/module.js',
+        index: './js/index.js',
         timeline: './js/Timeline.js',
         taskchart: './js/TaskChart.js'
     },
+    resolve: {
+        alias: {
+            'jquery-ui': 'jquery-ui/jquery-ui.js',
+            modules: path.join(__dirname, "node_modules")
+        }
+    },
     output: {
-        path: path.resolve(__dirname, 'sparkmonitor/static'),
+        path: path.resolve(__dirname, 'dist'),
         filename: '[name].js',
         // library:'sparkmonitor',
-        libraryTarget: 'umd'
+        libraryTarget: 'commonjs2'
     },
-    externals: ['jquery', 'require', 'base/js/namespace', 'base/js/events', 'notebook/js/codecell', 'moment'],
+    externals: ['jquery', 'jquery-ui-bundle', 'moment', 'kuende-livestamp', /^@phosphor\/.+$/, /^@jupyterlab\/.+$/],
     devtool: 'source-map',
+    plugins: [
+        /* Use the ProvidePlugin constructor to inject jquery implicit globals */
+        new webpack.ProvidePlugin({
+            $: "jquery",
+            jQuery: "jquery",
+            "window.jQuery": "jquery'",
+            "window.$": "jquery"
+        })
+      ],
     module: {
         rules: [
             {
