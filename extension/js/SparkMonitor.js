@@ -75,7 +75,7 @@ export default class SparkMonitor {
      * @return {CellMonitor} The CellMonitor object for the cell
      */
     startCellMonitor(cell) {
-        if (this.cellmonitors[cell.id] !== undefined) {
+        if (this.cellmonitors[cell.id]) {
             this.cellmonitors[cell.id].removeDisplay();
         }
         if (this.listener.cellReexecuted) {
@@ -99,7 +99,7 @@ export default class SparkMonitor {
      * @param {CodeCell} cell - The Jupyter CodeCell instance
      */
     stopCellMonitor(id) {
-        if (this.cellmonitors[id] !== undefined || this.cellmonitors[id] !== null) {
+        if (this.cellmonitors[id]) {
             this.cellmonitors[id].removeDisplay();
             this.cellmonitors[id] = null;
             delete this.cellmonitors[id];

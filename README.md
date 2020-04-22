@@ -52,13 +52,29 @@ make build
 make develop
 ```
 
-## Installation
+## Quick Start
 
 ```bash
 jupyter labextension install jupyterlab_sparkmonitor # install the jupyterlab extension
 pip install jupyterlab-sparkmonitor # install the server/kernel extension
-jupyter serverextension enable --py jupyterlab-sparkmonitor
+jupyter serverextension enable --py sparkmonitor
 ipython profile create --ipython-dir=.ipython # set up ipython locally
 echo "c.InteractiveShellApp.extensions.append('sparkmonitor.kernelextension')" >>  .ipython/profile_default/ipython_kernel_config.py
 IPYTHONDIR=.ipython jupyter lab --watch # run jupyter lab
+```
+
+With the extension installed, a SparkConf object called `conf` will be usable from your notebooks.
+
+Here is an example of a notebook to run in order to test the extension:
+
+```python
+from pyspark import SparkContext
+
+# start the spark context using the SparkConf the extension inserted
+sc=SparkContext.getOrCreate(conf=conf) #Start the spark context
+
+sc.parallelize(range(0,100)).count()
+sc.parallelize(range(0,100)).count()
+sc.parallelize(range(0,100)).count()
+sc.parallelize(range(0,100)).count()
 ```

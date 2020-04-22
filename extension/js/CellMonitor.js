@@ -27,7 +27,20 @@ export default class CellMonitor {
         this.cell = cell; // Jupyter Cell instance
         this.view = 'jobs'; // The current display tab -- "jobs" || "timeline" || "tasks"
         this.lastview = 'jobs'; // The previous display tab, used for restoring hidden display
+        this.baseurl = ServerConnection.makeSettings().baseUrl;
 
+        this.init();
+
+        // Listen to event for cell finished executing
+        this.monitor.nbPanel.session.kernel.statusChanged.connect((sender, status) => {
+            console.log(status);
+            if (status === 'idle') {
+                this.onCellExecutionCompleted();
+            }
+        });
+    }
+
+    init() {
         this.initialDisplayCreated = false; // Used by jobstart event to show display first time
         this.displayVisible = false; // Used to toggle display
 
@@ -45,14 +58,6 @@ export default class CellMonitor {
         this.numActiveJobs = 0;
         this.numCompletedJobs = 0;
         this.numFailedJobs = 0;
-
-        // Listen to event for cell finished executing
-        this.monitor.nbPanel.session.kernel.statusChanged.connect((sender, status) => {
-            console.log(status);
-            if (status === 'idle') {
-                this.onCellExecutionCompleted();
-            }
-        });
 
         // Job Table Data----------------------------------
         this.jobData = {};
@@ -108,6 +113,9 @@ export default class CellMonitor {
                         <span class="sparkuitabbutton tabbutton" dt="tooltiptop" title="Open the Spark UI">
                             <span class="sparkuitabbuttonicon tabbuttonicon"></span>
                         </span>
+                        <span class="closebutton tabbutton" dt="tooltiptop" title="Close Display">
+                            <span class="closebuttonicon tabbuttonicon"></span>
+                        </span>
                     </span>
                 </span>
                 </div>
@@ -134,12 +142,10 @@ export default class CellMonitor {
             `;
     }
 
-    static openSparkUI(url) {
-        const setting = ServerConnection.makeSettings();
-
+    openSparkUI(url) {
         const iframe = $(`<div style="overflow:hidden">
                         <iframe src="${URLExt.join(
-                            setting.baseUrl,
+                            this.baseurl,
                             'sparkmonitor',
                             url || '',
                         )}" frameborder="0" scrolling="yes" class="sparkuiframe">
@@ -175,7 +181,7 @@ export default class CellMonitor {
                 this.removeDisplay();
             });
             element.find('.sparkuitabbutton').click(() => {
-                CellMonitor.openSparkUI('');
+                this.openSparkUI('');
             });
 
             element.find('.titlecollapse').click(() => {
@@ -230,6 +236,7 @@ export default class CellMonitor {
         }
         this.hideView(this.view);
         this.displayElement.remove();
+        this.init();
     }
 
     /** Renders a view specified
