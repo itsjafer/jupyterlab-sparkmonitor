@@ -1,6 +1,6 @@
 {
   "name": "jupyterlab_sparkmonitor",
-  "version": "0.0.4",
+  "version": "1.0.1",
   "description": "Jupyter Lab extension to monitor Apache Spark Jobs",
   "repository": {
     "type": "git",
@@ -48,7 +48,8 @@
     "webpack-cli": "^3.3.10"
   },
   "scripts": {
-    "docs": "jsdoc -c conf.json ./js/"
+    "docs": "jsdoc -c conf.json ./js/",
+    "build": "webpack"
   },
   "dependencies": {
     "@jupyterlab/application": "^1.2.0",
@@ -74,6 +75,7 @@
     "extension": "dist/index"
   },
   "files": [
-    "dist/*"
+    "dist/*",
+    "js/*"
   ]
 }
