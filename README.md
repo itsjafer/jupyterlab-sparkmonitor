@@ -1,6 +1,6 @@
 # Spark Monitor - An extension for Jupyter Lab
 
-This project was originally written by krishnan-r as a Google Summer of Code project for Jupyter Notebook. [Check his website out here.](https://krishnan-r.github.io/sparkmonitor/) .
+This project was originally written by krishnan-r as a Google Summer of Code project for Jupyter Notebook. [Check his website out here.](https://krishnan-r.github.io/sparkmonitor/) As a part of my internship as a Software Engineer at Yelp, I created this fork to update the extension to be compatible with JupyterLab - Yelp's choice for sharing and collaborating on notebooks.
 
 ## About
 
@@ -42,30 +42,22 @@ SparkMonitor is an extension for Jupyter Lab that enables the live monitoring of
 </tr>
 </table>
 
-## Quick Development
-
-```bash
-cd extension
-make venv
-source venv/bin/activate
-make build
-make develop
-```
-
 ## Quick Start
 
 ```bash
 jupyter labextension install jupyterlab_sparkmonitor # install the jupyterlab extension
 pip install jupyterlab-sparkmonitor # install the server/kernel extension
 jupyter serverextension enable --py sparkmonitor
-ipython profile create --ipython-dir=.ipython # set up ipython locally
+
+# set up ipython profile and add our kernel extension to it
+ipython profile create --ipython-dir=.ipython
 echo "c.InteractiveShellApp.extensions.append('sparkmonitor.kernelextension')" >>  .ipython/profile_default/ipython_kernel_config.py
-IPYTHONDIR=.ipython jupyter lab --watch # run jupyter lab
+
+# run jupyter lab
+IPYTHONDIR=.ipython jupyter lab --watch 
 ```
 
-With the extension installed, a SparkConf object called `conf` will be usable from your notebooks.
-
-Here is an example of a notebook to run in order to test the extension:
+With the extension installed, a SparkConf object called `conf` will be usable from your notebooks. You can use it as follows:
 
 ```python
 from pyspark import SparkContext
@@ -73,8 +65,37 @@ from pyspark import SparkContext
 # start the spark context using the SparkConf the extension inserted
 sc=SparkContext.getOrCreate(conf=conf) #Start the spark context
 
+# Monitor should spawn under the cell with 4 jobs
 sc.parallelize(range(0,100)).count()
 sc.parallelize(range(0,100)).count()
 sc.parallelize(range(0,100)).count()
 sc.parallelize(range(0,100)).count()
+```
+
+If you already have your own spark configuration, you will need to set `spark.extraListeners` to `sparkmonitor.listener.JupyterSparkMonitorListener` and `spark.driver.extraClassPath` to the path to the sparkmonitor python package 'path/to/package/sparkmonitor/listener.jar'
+```python
+from pyspark.sql import SparkSession
+spark = SparkSession.builder\
+        .config('spark.extraListeners', 'sparkmonitor.listener.JupyterSparkMonitorListener')\
+        .config('spark.driver.extraClassPath', 'venv/lib/python3.7/site-packages/sparkmonitor/listener.jar')\
+        .getOrCreate()
+
+# should spawn 4 jobs in a monitor bnelow the cell
+spark.sparkContext.parallelize(range(0,100)).count()
+spark.sparkContext.parallelize(range(0,100)).count()
+spark.sparkContext.parallelize(range(0,100)).count()
+spark.sparkContext.parallelize(range(0,100)).count()
+```
+
+
+## Development
+
+If you'd like to develop the extension:
+
+```bash
+cd extension
+make venv # Creates a virtual environment using tox 
+source venv/bin/activate # Make sure we're using the virtual environment
+make build # Build the extension
+make develop # Run a local jupyterlab with the extension installed
 ```
