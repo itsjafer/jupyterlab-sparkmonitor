@@ -1,6 +1,8 @@
 # Spark Monitor - An extension for Jupyter Lab
 
-This project was originally written by krishnan-r as a Google Summer of Code project for Jupyter Notebook. [Check his website out here.](https://krishnan-r.github.io/sparkmonitor/) As a part of my internship as a Software Engineer at Yelp, I created this fork to update the extension to be compatible with JupyterLab - Yelp's choice for sharing and collaborating on notebooks.
+This project was originally written by krishnan-r as a Google Summer of Code project for Jupyter Notebook. [Check his website out here.](https://krishnan-r.github.io/sparkmonitor/) 
+
+As a part of my internship as a Software Engineer at Yelp, I created this fork to update the extension to be compatible with JupyterLab - Yelp's choice for sharing and collaborating on notebooks.
 
 ## About
 
