@@ -53,7 +53,7 @@ jupyter serverextension enable --py sparkmonitor
 
 # set up ipython profile and add our kernel extension to it
 ipython profile create --ipython-dir=.ipython
-echo "c.InteractiveShellApp.extensions.append('sparkmonitor.kernelextension')" >>  .ipython/profile_default/ipython_kernel_config.py
+echo "c.InteractiveShellApp.extensions.append('sparkmonitor.kernelextension')" >>  .ipython/profile_default/ipython_config.py
 
 # run jupyter lab
 IPYTHONDIR=.ipython jupyter lab --watch 
@@ -74,7 +74,7 @@ sc.parallelize(range(0,100)).count()
 sc.parallelize(range(0,100)).count()
 ```
 
-If you already have your own spark configuration, you will need to set `spark.extraListeners` to `sparkmonitor.listener.JupyterSparkMonitorListener` and `spark.driver.extraClassPath` to the path to the sparkmonitor python package 'path/to/package/sparkmonitor/listener.jar'
+If you already have your own spark configuration, you will need to set `spark.extraListeners` to `sparkmonitor.listener.JupyterSparkMonitorListener` and `spark.driver.extraClassPath` to the path to the sparkmonitor python package `path/to/package/sparkmonitor/listener.jar`
 ```python
 from pyspark.sql import SparkSession
 spark = SparkSession.builder\
