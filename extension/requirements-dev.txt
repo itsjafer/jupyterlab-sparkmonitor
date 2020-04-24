@@ -1,4 +1,0 @@
-jupyter==1.0.0
-jupyterlab==1.2.0
-pyspark
-pre-commit

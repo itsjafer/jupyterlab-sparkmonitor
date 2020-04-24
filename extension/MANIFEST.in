@@ -1,3 +1,0 @@
-graft sparkmonitor/static
-recursive-include sparkmonitor *.jar
-include VERSION
