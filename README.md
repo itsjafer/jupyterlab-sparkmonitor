@@ -46,6 +46,13 @@ SparkMonitor is an extension for Jupyter Lab that enables the live monitoring of
 
 ## Quick Start
 
+### To do a quick test of the extension
+This docker image has pyspark and several other related packages installed alongside the sparkmonitor extension.
+```bash
+docker run -it -p 8888:8888 itsjafer/sparkmonitor
+```
+
+### Setting up the extension 
 ```bash
 jupyter labextension install jupyterlab_sparkmonitor # install the jupyterlab extension
 pip install jupyterlab-sparkmonitor # install the server/kernel extension
@@ -95,7 +102,6 @@ spark.sparkContext.parallelize(range(0,100)).count()
 If you'd like to develop the extension:
 
 ```bash
-cd extension
 make venv # Creates a virtual environment using tox 
 source venv/bin/activate # Make sure we're using the virtual environment
 make build # Build the extension
