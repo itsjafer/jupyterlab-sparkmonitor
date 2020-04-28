@@ -33,7 +33,6 @@ export default class CellMonitor {
 
         // Listen to event for cell finished executing
         this.monitor.nbPanel.session.kernel.statusChanged.connect((sender, status) => {
-            console.log(status);
             if (status === 'idle') {
                 this.onCellExecutionCompleted();
             }
@@ -178,7 +177,7 @@ export default class CellMonitor {
 
             if (this.cellcompleted) element.find('.stopbutton').hide();
             element.find('.closebutton').click(() => {
-                this.removeDisplay();
+                this.removeDisplay(true);
             });
             element.find('.sparkuitabbutton').click(() => {
                 this.openSparkUI('');
@@ -228,7 +227,7 @@ export default class CellMonitor {
     }
 
     /** Remove the display from a cell. */
-    removeDisplay() {
+    removeDisplay(eraseData = true) {
         this.displayVisible = false;
         if (this.badgeInterval) {
             clearInterval(this.badgeInterval);
@@ -236,7 +235,13 @@ export default class CellMonitor {
         }
         this.hideView(this.view);
         this.displayElement.remove();
-        this.init();
+        this.initialDisplayCreated = false; // Used by jobstart event to show display first time
+        this.displayVisible = false; // Used to toggle display
+        this.displayElement = null;
+        // Only if the load successfully create these views.
+        if (eraseData) {
+            this.init();
+        }
     }
 
     /** Renders a view specified

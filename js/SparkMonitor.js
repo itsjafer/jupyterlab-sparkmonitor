@@ -82,7 +82,6 @@ export default class SparkMonitor {
             this.cellExecutedAgain(cell);
         }
         this.cellmonitors[cell.id] = new CellMonitor(this, cell);
-        this.display_mode = 'shown';
         return this.cellmonitors[cell.id];
     }
 
@@ -104,24 +103,6 @@ export default class SparkMonitor {
             this.cellmonitors[id] = null;
             delete this.cellmonitors[id];
         }
-    }
-
-    /** Adds a button to the toolbar for toggling all monitoring dispalys. */
-    static createButtons() {
-        // let that = this;
-        // let handler () {
-        // 	that.toggleAll();
-        // };
-        // let action = {
-        // 	icon: 'fa-tasks', // a font-awesome class used on buttons, etc
-        // 	help: 'Toggle Spark Monitoring Displays',
-        // 	help_index: 'zz', // Sorting Order in keyboard shortcut dialog
-        // 	handler: handler
-        // };
-        // let prefix = 'SparkMonitor';
-        // let action_name = 'toggle-spark-monitoring';
-        // let full_action_name = Jupyter.actions.register(action, action_name, prefix); // returns 'my_extension:show-alert'
-        // Jupyter.toolbar.add_buttons_group([full_action_name]);
     }
 
     // -----Functions to show/hide all displays
@@ -214,7 +195,7 @@ export default class SparkMonitor {
         console.log(`SparkMonitor: Job Start at cell: ${cell.id} ${data}`);
 
         let cellmonitor = this.getCellMonitor(cell.id);
-        if (!cellmonitor) {
+        if (this.display_mode === 'shown' && !cellmonitor) {
             cellmonitor = this.startCellMonitor(cell);
         }
         this.data[`app${this.app}job${data.jobId}`] = {
@@ -352,6 +333,9 @@ export default class SparkMonitor {
      * @param {Object} msg - The JSON parsed message object.
      */
     handleMessage(msg) {
+        if (this.display_mode === 'hidden') {
+            return;
+        }
         if (!msg.content.data.msgtype) {
             console.warn('SparkMonitor: Unknown message');
         }
