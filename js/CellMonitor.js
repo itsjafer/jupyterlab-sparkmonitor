@@ -33,7 +33,6 @@ export default class CellMonitor {
 
         // Listen to event for cell finished executing
         this.monitor.nbPanel.session.kernel.statusChanged.connect((sender, status) => {
-            console.log(status);
             if (status === 'idle') {
                 this.onCellExecutionCompleted();
             }
@@ -236,6 +235,7 @@ export default class CellMonitor {
         }
         this.hideView(this.view);
         this.displayElement.remove();
+        // Only if the load successfully create these views.
         this.init();
     }
 
