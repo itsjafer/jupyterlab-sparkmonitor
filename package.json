@@ -74,7 +74,7 @@
     "webpack": "^4.41.5"
   },
   "jupyterlab": {
-    "extension": "js/index"
+    "extension": "dist/index"
   },
   "files": [
     "lib/*",

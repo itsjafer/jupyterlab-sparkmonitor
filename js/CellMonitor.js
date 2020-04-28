@@ -177,7 +177,7 @@ export default class CellMonitor {
 
             if (this.cellcompleted) element.find('.stopbutton').hide();
             element.find('.closebutton').click(() => {
-                this.removeDisplay(true);
+                this.removeDisplay();
             });
             element.find('.sparkuitabbutton').click(() => {
                 this.openSparkUI('');
@@ -227,7 +227,7 @@ export default class CellMonitor {
     }
 
     /** Remove the display from a cell. */
-    removeDisplay(eraseData = true) {
+    removeDisplay() {
         this.displayVisible = false;
         if (this.badgeInterval) {
             clearInterval(this.badgeInterval);
@@ -235,13 +235,8 @@ export default class CellMonitor {
         }
         this.hideView(this.view);
         this.displayElement.remove();
-        this.initialDisplayCreated = false; // Used by jobstart event to show display first time
-        this.displayVisible = false; // Used to toggle display
-        this.displayElement = null;
         // Only if the load successfully create these views.
-        if (eraseData) {
-            this.init();
-        }
+        this.init();
     }
 
     /** Renders a view specified

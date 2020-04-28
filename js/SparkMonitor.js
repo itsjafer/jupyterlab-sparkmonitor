@@ -114,14 +114,6 @@ export default class SparkMonitor {
 
     /** Show all displays. */
     showAll() {
-        Object.keys(this.cellmonitors).forEach(id => {
-            if (
-                Object.prototype.hasOwnProperty.call(this.cellmonitors, id) &&
-                this.cellmonitors[id].displayVisible === false
-            ) {
-                this.cellmonitors[id].createDisplay();
-            }
-        });
         this.display_mode = 'shown';
     }
 
