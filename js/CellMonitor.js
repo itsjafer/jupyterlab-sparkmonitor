@@ -32,7 +32,7 @@ export default class CellMonitor {
         this.init();
 
         // Listen to event for cell finished executing
-        this.monitor.nbPanel.session.kernel.statusChanged.connect((sender, status) => {
+        this.monitor.kernel.statusChanged.connect((sender, status) => {
             if (status === 'idle') {
                 this.onCellExecutionCompleted();
             }

@@ -24,15 +24,15 @@ export default class SparkMonitor {
         /** Communication object with the kernel. */
         this.comm = null;
 
+        this.kernel = nbPanel.session ? this.nbPanel.session.kernel : this.nbPanel.sessionContext.session.kernel;
+
         // Fixes Reloading the browser
-        this.startComm(nbPanel.session.kernel);
+        this.startComm(this.kernel);
         // Fixes Restarting the Kernel
-        this.nbPanel.session.kernel.statusChanged.connect((_, status) => {
+        this.kernel.statusChanged.connect((_, status) => {
             if (status === 'starting') {
-                this.nbPanel.session.kernel.ready.then(() => {
-                    this.listener.cellReexecuted = false;
-                    this.startComm(this.nbPanel.session.kernel);
-                });
+                this.listener.cellReexecuted = false;
+                this.startComm(this.kernel);
             }
         });
 
@@ -148,7 +148,9 @@ export default class SparkMonitor {
     startComm(kernel) {
         console.log('SparkMonitor: Starting Comm with kernel.');
         this.listener.ready().then(() => {
-            this.comm = kernel.connectToComm('SparkMonitor');
+            console.log(kernel);
+            this.comm =
+                'createComm' in kernel ? kernel.createComm('SparkMonitor') : kernel.connectToComm('SparkMonitor');
             this.comm.open({ msgtype: 'openfromfrontend' });
             this.comm.onMsg = message => {
                 this.handleMessage(message);

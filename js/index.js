@@ -18,20 +18,30 @@ const extension = {
     activate(app, notebooks, mainMenu) {
         let monitor;
         console.log('JupyterLab SparkMonitor is activated!');
-        notebooks.widgetAdded.connect((sender, nbPanel) => {
+        notebooks.widgetAdded.connect(async (sender, nbPanel) => {
             console.log('Notebook added!');
-            const { session } = nbPanel;
-            session.ready.then(() => {
-                console.log('Notebook session ready');
-                const { kernel } = session;
-                kernel.ready.then(() => {
-                    if (kernel.info.language_info.name === 'python') {
-                        monitor = new SparkMonitor(nbPanel);
-                        console.log('Notebook kernel ready');
-                        monitor.startComm(kernel);
-                    }
-                });
-            });
+
+            // JupyterLab 1.0 backwards compatibility
+            let kernel;
+            let info;
+            if (nbPanel.session) {
+                await nbPanel.session.ready;
+                kernel = nbPanel.session.kernel;
+                await kernel.ready;
+                info = kernel.info;
+            } else {
+                // JupyterLab 2.0
+                const { sessionContext } = nbPanel;
+                await sessionContext.ready;
+                kernel = sessionContext.session.kernel;
+                info = await kernel.info;
+            }
+
+            if (info.language_info.name === 'python') {
+                monitor = new SparkMonitor(nbPanel);
+                console.log('Notebook kernel ready');
+                monitor.startComm(kernel);
+            }
         });
 
         const commandID = 'toggle-monitor';
