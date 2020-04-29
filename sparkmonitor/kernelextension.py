@@ -124,8 +124,10 @@ class SocketThread(Thread):
                     logger.info('Message Received: \n%s\n', msg)
                     self.onrecv(msg)
             logger.info('Socket Exiting Client Loop')
-            client.shutdown(socket.SHUT_RDWR)
-            client.close()
+            try:
+                client.shutdown(socket.SHUT_RDWR)
+            except OSError:
+                client.close()
 
     def start(self):
         """Starts the socket thread"""
