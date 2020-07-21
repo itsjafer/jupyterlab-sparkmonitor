@@ -1,5 +1,6 @@
-# Spark Monitor Fork - A fork of [SparkMonitor-Jupyterlab](https://github.com/itsjafer/jupyterlab-sparkmonitor) which was a fork of [SparkMonitor](https://github.com/krishnan-r/sparkmonitor) that works with multiple Spark Sessions and consistently maintains the active cell.
+# Spark Monitor Fork - A fork of [SparkMonitor-Jupyterlab](https://github.com/itsjafer/jupyterlab-sparkmonitor) that works with multiple Spark Sessions and consistently maintains the active cell.
 
+SparkMonitor-Jupyterlab was originally a fork of [SparkMonitor](https://github.com/krishnan-r/sparkmonitor)<br>
 I've also forked the original SparkMonitor to work with multiple Spark Sessions [here](https://github.com/Ben-Epstein/sparkmonitor)
 
 ## About
