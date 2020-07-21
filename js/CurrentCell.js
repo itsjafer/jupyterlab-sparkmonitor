@@ -5,8 +5,8 @@ import { PromiseDelegate } from '@phosphor/coreutils';
 export default class CurrentCell {
     constructor(panel) {
         this.isReady = new PromiseDelegate();
-        this._cellSlotMap = {};
-        this._panel = panel;
+        this.cellSlotMap = {};
+        this.panel = panel;
         this.activeCell = null;
         this.lastExecutedCell = null;
         this.cellReexecuted = null;
@@ -17,40 +17,35 @@ export default class CurrentCell {
     }
 
     async init() {
-        await this._panel.revealed;
-        this.notebook = this._panel.content;
-        this._registerCells();
+        await this.panel.revealed;
+        this.notebook = this.panel.content;
+        this.registerCells();
         this.isReady.resolve(undefined);
     }
 
-    updateConnectedCell(
-        cells,
-        changed
-    ) {
+    updateConnectedCell(cells, changed) {
         // While we could look at changed.type, it's easier to just remove all
         // oldValues and add back all new values
-        changed.oldValues.forEach(this._deregisterMetadataChanges.bind(this));
-        changed.newValues.forEach(this._registerMetadataChanges.bind(this));
+        changed.oldValues.forEach(this.deregisterMetadataChanges.bind(this));
+        changed.newValues.forEach(this.registerMetadataChanges.bind(this));
     }
 
-    _registerMetadataChanges(cellModel) {
-        if (!(cellModel.id in this._cellSlotMap)) {
-            const fn = () => this._cellMetadataChanged(cellModel);
-            this._cellSlotMap[cellModel.id] = fn;
+    registerMetadataChanges(cellModel) {
+        if (!(cellModel.id in this.cellSlotMap)) {
+            const fn = () => this.cellMetadataChanged(cellModel);
+            this.cellSlotMap[cellModel.id] = fn;
             cellModel.metadata.changed.connect(fn);
             // In case there was already metadata (do not highlight on first load)
-            this._cellMetadataChanged(cellModel, true);
+            this.cellMetadataChanged(cellModel, true);
         }
     }
 
-
-    _deregisterMetadataChanges(cellModel) {
-        const fn = this._cellSlotMap[cellModel.id];
+    deregisterMetadataChanges(cellModel) {
+        const fn = this.cellSlotMap[cellModel.id];
         if (fn) {
             cellModel.metadata.changed.disconnect(fn);
-            const codeCell = this._getCodeCell(cellModel);
         }
-        delete this._cellSlotMap[cellModel.id];
+        delete this.cellSlotMap[cellModel.id];
     }
 
     /**
@@ -60,46 +55,44 @@ export default class CurrentCell {
      * @param cellModel
      * @private
      */
-    _getCodeCell(cellModel) {
+    getCodeCell(cellModel) {
         if (cellModel.type === 'code') {
-            const cell = this._panel.content.widgets.find(
-                (widget) => widget.model === cellModel
-            );
+            const cell = this.panel.content.widgets.find(widget => widget.model === cellModel);
             return cell;
         }
         return null;
     }
 
-
-    _cellMetadataChanged(cellModel, disableHighlight = false) {
-        console.log('Cell metadata changed')
-        const codeCell = this._getCodeCell(cellModel);
+    cellMetadataChanged(cellModel) {
+        console.log('Cell metadata changed');
+        const codeCell = this.getCodeCell(cellModel);
         if (codeCell) {
-            const executionMetadata = codeCell.model.metadata.get(
-                'execution'
-            );
+            const executionMetadata = codeCell.model.metadata.get('execution');
             if (executionMetadata) {
                 // const startTimeStr = (executionMetadata['shell.execute_reply.started'] ||
                 //     executionMetadata['iopub.execute_input']) as string | null;
 
-                if ((executionMetadata['iopub.status.busy']) && this.lastBusySignal != executionMetadata['iopub.status.busy']) {
-                    console.log('we have an active cell!')
+                if (
+                    executionMetadata['iopub.status.busy'] &&
+                    this.lastBusySignal !== executionMetadata['iopub.status.busy']
+                ) {
+                    console.log('we have an active cell!');
                     this.activeCell = codeCell;
-                    this.cellReexecuted = (this.lastExecutedCell == codeCell);
+                    this.cellReexecuted = this.lastExecutedCell === codeCell;
                     this.lastExecutedCell = codeCell;
                     this.numCellsExecuted += 1;
-                    this.lastBusySignal = executionMetadata['iopub.status.busy']
+                    this.lastBusySignal = executionMetadata['iopub.status.busy'];
                 }
             }
         }
     }
 
-    _registerCells() {
-        const cells = this._panel.context.model.cells;
-        console.log('connecting cells')
+    registerCells() {
+        const { cells } = this.panel.context.model;
+        console.log('connecting cells');
         cells.changed.connect(this.updateConnectedCell);
-        for (let i = 0; i < cells.length; ++i) {
-            this._registerMetadataChanges(cells.get(i));
+        for (let i = 0; i < cells.length; i += 1) {
+            this.registerMetadataChanges(cells.get(i));
         }
     }
 
@@ -110,9 +103,11 @@ export default class CurrentCell {
     getCellReexecuted() {
         return this.cellReexecuted;
     }
+
     getNumCellsExecuted() {
         return this.numCellsExecuted;
     }
+
     ready() {
         return this.isReady.promise;
     }

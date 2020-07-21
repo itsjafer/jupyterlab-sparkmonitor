@@ -24,7 +24,7 @@ export default class CellMonitor {
      */
     constructor(monitor, cell) {
         this.monitor = monitor; // Parent SparkMonitor instance
-        this.cell = cell
+        this.cell = cell;
         this.view = 'jobs'; // The current display tab -- "jobs" || "timeline" || "tasks"
         this.lastview = 'jobs'; // The previous display tab, used for restoring hidden display
         this.baseurl = ServerConnection.makeSettings().baseUrl;
@@ -180,8 +180,8 @@ export default class CellMonitor {
                 this.removeDisplay();
             });
             element.find('.sparkuitabbutton').click(() => {
-                var port = prompt("Which Spark port?", "4040");
-                this.openSparkUI(port + '/');
+                const port = prompt('Which Spark port?', '4040');
+                this.openSparkUI(`${port}/`);
             });
 
             element.find('.titlecollapse').click(() => {
