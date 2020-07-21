@@ -24,7 +24,6 @@ export default class CellMonitor {
      */
     constructor(monitor, cell) {
         this.monitor = monitor; // Parent SparkMonitor instance
-        // this.cell = cell; // Jupyter Cell instance
         this.cell = cell
         this.view = 'jobs'; // The current display tab -- "jobs" || "timeline" || "tasks"
         this.lastview = 'jobs'; // The previous display tab, used for restoring hidden display

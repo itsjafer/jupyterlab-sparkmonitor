@@ -1,13 +1,4 @@
-import { NotebookPanel } from '@jupyterlab/notebook';
-import { ISettingRegistry } from '@jupyterlab/settingregistry';
-import { JSONExt, JSONObject } from '@lumino/coreutils';
 import { PromiseDelegate } from '@phosphor/coreutils';
-import {
-    IObservableJSON,
-    IObservableList,
-    IObservableUndoableList
-} from '@jupyterlab/observables';
-import { Cell, CodeCell, ICellModel } from '@jupyterlab/cells';
 
 // Logic adapted from https://github.com/deshaw/jupyterlab-execute-time/blob/master/src/ExecuteTimeWidget.ts
 

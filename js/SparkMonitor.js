@@ -189,7 +189,7 @@ export default class SparkMonitor {
      * Called when a Spark job is started.
      * @param {Object} data - The data from the spark listener event.
      */
-    onSparkJobStart(data) {        
+    onSparkJobStart(data) {
         const cell = this.getCurrentlyActiveCell();
         if (cell.id === '') {
             cell.id = uuidv4();
