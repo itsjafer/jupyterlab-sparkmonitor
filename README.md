@@ -1,7 +1,8 @@
-# Spark Monitor Fork - A fork of [SparkMonitor-Jupyterlab](https://github.com/itsjafer/jupyterlab-sparkmonitor) that works with multiple Spark Sessions and consistently maintains the active cell.
+# Spark Monitor - An extension for Jupyter Lab
 
-SparkMonitor-Jupyterlab was originally a fork of [SparkMonitor](https://github.com/krishnan-r/sparkmonitor)<br>
-I've also forked the original SparkMonitor to work with multiple Spark Sessions [here](https://github.com/Ben-Epstein/sparkmonitor)
+This project was originally written by krishnan-r as a Google Summer of Code project for Jupyter Notebook. [Check his website out here.](https://krishnan-r.github.io/sparkmonitor/) 
+
+As a part of my internship as a Software Engineer at Yelp, I created this fork to update the extension to be compatible with JupyterLab - Yelp's choice for sharing and collaborating on notebooks.
 
 ## About
 
@@ -53,8 +54,8 @@ docker run -it -p 8888:8888 itsjafer/sparkmonitor
 
 ### Setting up the extension 
 ```bash
-jupyter labextension install jupyterlab_sparkmonitor-s # install the jupyterlab extension
-pip install sparkmonitor-s # install the server/kernel extension
+jupyter labextension install jupyterlab_sparkmonitor # install the jupyterlab extension
+pip install jupyterlab-sparkmonitor # install the server/kernel extension
 jupyter serverextension enable --py sparkmonitor
 
 # set up ipython profile and add our kernel extension to it
