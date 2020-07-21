@@ -3,9 +3,10 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+from os import path
+
 from setuptools import find_packages
 from setuptools import setup
-from os import path
 
 with open('VERSION') as version_file:
     version = version_file.read().strip()
