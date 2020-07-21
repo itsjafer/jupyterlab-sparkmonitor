@@ -1,8 +1,6 @@
-# Spark Monitor - An extension for Jupyter Lab
+# Spark Monitor Fork - A fork of [SparkMonitor-Jupyterlab](https://github.com/itsjafer/jupyterlab-sparkmonitor) which was a fork of [SparkMonitor](https://github.com/krishnan-r/sparkmonitor) that works with multiple Spark Sessions and consistently maintains the active cell.
 
-This project was originally written by krishnan-r as a Google Summer of Code project for Jupyter Notebook. [Check his website out here.](https://krishnan-r.github.io/sparkmonitor/) 
-
-As a part of my internship as a Software Engineer at Yelp, I created this fork to update the extension to be compatible with JupyterLab - Yelp's choice for sharing and collaborating on notebooks.
+I've also forked the original SparkMonitor to work with multiple Spark Sessions [here](https://github.com/Ben-Epstein/sparkmonitor)
 
 ## About
 
