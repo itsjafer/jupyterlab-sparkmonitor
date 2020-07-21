@@ -4,10 +4,13 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import CellMonitor from './CellMonitor'; // CellMonitor object constructor
-import NotebookListener from './NotebookListener'; // Module to detect currently running cell
+import CellMonitor from './CellMonitor'; // CellMonitor object constructor 
+import CurrentCell from './CurrentCell'; // Module to detect currently running cell
+import {INotebookTracker} from '@jupyterlab/notebook';
+import $ from 'jquery';
 
 export default class SparkMonitor {
+    
     /**
      * SparkMonitor is the main singleton class that is responsible for managing CellMonitor instances for cells that run spark jobs.
      * It also delegates spark lifecycle events from the backend to corresponding CellMonitor.
@@ -18,12 +21,13 @@ export default class SparkMonitor {
     constructor(nbPanel) {
         this.nbPanel = nbPanel;
         // create our notebook listener
-        this.listener = new NotebookListener(nbPanel);
+        this.listener = new CurrentCell(nbPanel);
         /** Dictionary of CellMonitor objects with id as keys. */
         this.cellmonitors = {};
         /** Communication object with the kernel. */
         this.comm = null;
-
+        this.cellExecCountSinceSparkJobStart = 0;
+        this.activeCell = null;
         this.kernel = nbPanel.session ? this.nbPanel.session.kernel : this.nbPanel.sessionContext.session.kernel;
 
         // Fixes Reloading the browser
@@ -61,6 +65,14 @@ export default class SparkMonitor {
     }
 
     /**
+     * Returns the currently active cell
+     */
+    getCurrentlyActiveCell(){
+        const cell = this.listener.getActiveCell();
+        return cell;
+    }
+
+    /**
      * Returns the CellMonitor given a id
      * @param {string} id - The Jupyter id
      * @return {CellMonitor} The CellMonitor object for the cell
@@ -78,7 +90,7 @@ export default class SparkMonitor {
         if (this.cellmonitors[cell.id]) {
             this.cellmonitors[cell.id].removeDisplay();
         }
-        if (this.listener.cellReexecuted) {
+        else if (this.listener.getCellReexecuted()) {
             this.cellExecutedAgain(cell);
         }
         this.cellmonitors[cell.id] = new CellMonitor(this, cell);
@@ -145,10 +157,11 @@ export default class SparkMonitor {
      * Closes any existing communication.
      * @param {IKernelConnection} kernel - The current kernel instance
      */
+    
     startComm(kernel) {
+        setTimeout(function(){console.log("waiting")},2000);
         console.log('SparkMonitor: Starting Comm with kernel.');
         this.listener.ready().then(() => {
-            console.log(kernel);
             this.comm =
                 'createComm' in kernel ? kernel.createComm('SparkMonitor') : kernel.connectToComm('SparkMonitor');
             this.comm.open({ msgtype: 'openfromfrontend' });
@@ -176,26 +189,31 @@ export default class SparkMonitor {
      * Called when a Spark job is started.
      * @param {Object} data - The data from the spark listener event.
      */
-    onSparkJobStart(data) {
-        const cell = this.listener.getActiveCell();
+    onSparkJobStart(data) {        
+        const cell = this.getCurrentlyActiveCell();
         if (cell.id === '') {
             cell.id = uuidv4();
         }
-
         if (cell === null) {
             console.error('SparkMonitor: Job started with no running cell.');
             return;
         }
         console.log(`SparkMonitor: Job Start at cell: ${cell.id} ${data}`);
+        
+        // See if we have a new execution. If it's new (a cell has been run again) we need to clear the cell monitor
+        let newExecution = (this.listener.getNumCellsExecuted() > this.cellExecCountSinceSparkJobStart);
+        if (newExecution) {
+            this.cellExecCountSinceSparkJobStart = this.listener.getNumCellsExecuted();
+        }
 
         let cellmonitor = this.getCellMonitor(cell.id);
-        if (this.display_mode === 'shown' && !cellmonitor) {
+        if (this.display_mode === 'shown' && (!cellmonitor || newExecution)) {
             cellmonitor = this.startCellMonitor(cell);
         }
+
         this.data[`app${this.app}job${data.jobId}`] = {
             cell_id: cell.id,
         };
-
         // These values are set here as previous messages may be missed if reconnecting from a browser reload.
         this.totalCores = data.totalCores;
         this.numExecutors = data.numExecutors;
@@ -222,7 +240,7 @@ export default class SparkMonitor {
      */
     onSparkStageSubmitted(data) {
         console.log('SparkMonitor:Stage Submitted', data);
-        const cell = this.listener.getActiveCell();
+        const cell = this.getCurrentlyActiveCell();
 
         if (cell === null) {
             console.error('SparkMonitor: Stage started with no running cell.');
@@ -300,7 +318,7 @@ export default class SparkMonitor {
     onSparkExecutorAdded(data) {
         this.totalCores = data.totalCores;
         this.numExecutors += 1;
-        const cell = this.listener.getActiveCell();
+        const cell = this.getCurrentlyActiveCell();
         if (cell !== null) {
             const cellmonitor = this.getCellMonitor(cell.id);
             if (cellmonitor) cellmonitor.onSparkExecutorAdded(data);
@@ -314,7 +332,7 @@ export default class SparkMonitor {
     onSparkExecutorRemoved(data) {
         this.totalCores = data.totalCores;
         this.numExecutors -= 1;
-        const cell = this.listener.getActiveCell();
+        const cell = this.getCurrentlyActiveCell();
         if (cell !== null) {
             const cellmonitor = this.getCellMonitor(cell.id);
             if (cellmonitor) cellmonitor.onSparkExecutorRemoved(data);

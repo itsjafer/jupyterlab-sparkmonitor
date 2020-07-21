@@ -46,9 +46,10 @@ const extension = {
 
         const commandID = 'toggle-monitor';
         let toggled = false;
+        let toggleLabel = "Toggle"
 
         app.commands.addCommand(commandID, {
-            label: 'Disable Monitors',
+            label: toggleLabel + ' Monitors',
             isEnabled: () => true,
             isVisible: () => true,
             isToggled: () => toggled,
