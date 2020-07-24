@@ -31,6 +31,6 @@ setup(name='jupyterlab-sparkmonitor',
       install_requires=[
           'bs4',
           'tornado',
-          'pyspark==2.4.3'
+          'pyspark'
       ],
       )
