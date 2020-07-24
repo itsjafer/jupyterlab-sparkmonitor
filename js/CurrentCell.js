@@ -1,4 +1,5 @@
 import { PromiseDelegate } from '@phosphor/coreutils';
+import { Cell, CodeCell, ICellModel } from '@jupyterlab/cells';
 
 // Logic adapted from https://github.com/deshaw/jupyterlab-execute-time/blob/master/src/ExecuteTimeWidget.ts
 
@@ -6,7 +7,7 @@ export default class CurrentCell {
     constructor(panel) {
         this.isReady = new PromiseDelegate();
         this.cellSlotMap = {};
-        this.panel = panel;
+        this.nb_panel = panel;
         this.activeCell = null;
         this.lastExecutedCell = null;
         this.cellReexecuted = null;
@@ -17,8 +18,8 @@ export default class CurrentCell {
     }
 
     async init() {
-        await this.panel.revealed;
-        this.notebook = this.panel.content;
+        await this.nb_panel.revealed;
+        this.notebook = this.nb_panel.content;
         this.registerCells();
         this.isReady.resolve(undefined);
     }
@@ -57,7 +58,7 @@ export default class CurrentCell {
      */
     getCodeCell(cellModel) {
         if (cellModel.type === 'code') {
-            const cell = this.panel.content.widgets.find(widget => widget.model === cellModel);
+            const cell = this.nb_panel.content.widgets.find(widget => widget.model === cellModel);
             return cell;
         }
         return null;
@@ -69,9 +70,6 @@ export default class CurrentCell {
         if (codeCell) {
             const executionMetadata = codeCell.model.metadata.get('execution');
             if (executionMetadata) {
-                // const startTimeStr = (executionMetadata['shell.execute_reply.started'] ||
-                //     executionMetadata['iopub.execute_input']) as string | null;
-
                 if (
                     executionMetadata['iopub.status.busy'] &&
                     this.lastBusySignal !== executionMetadata['iopub.status.busy']
@@ -88,8 +86,7 @@ export default class CurrentCell {
     }
 
     registerCells() {
-        const { cells } = this.panel.context.model;
-        console.log('connecting cells');
+        const cells  = this.nb_panel.context.model.cells;
         cells.changed.connect(this.updateConnectedCell);
         for (let i = 0; i < cells.length; i += 1) {
             this.registerMetadataChanges(cells.get(i));
