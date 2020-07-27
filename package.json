@@ -1,6 +1,6 @@
 {
-  "name": "jupyterlab_sparkmonitor-s",
-  "version": "1.2.0",
+  "name": "jupyterlab_sparkmonitor",
+  "version": "1.1.0",
   "description": "Jupyter Lab extension to monitor Apache Spark Jobs",
   "repository": {
     "type": "git",
