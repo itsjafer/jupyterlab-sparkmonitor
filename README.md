@@ -21,6 +21,11 @@ SparkMonitor is an extension for Jupyter Lab that enables the live monitoring of
 
 ![jobdisplay](https://user-images.githubusercontent.com/6822941/29753710-ff8849b6-8b94-11e7-8f9c-bdc59bf72143.gif)
 
+### Requirements
+
+-   At least JupyterLab 2.0.0 (necessary to get cell execution metadata)
+-   pyspark 2.X.X or older (pyspark 3.X is currently not supported)
+
 ## Features
 
 -   Automatically displays a live monitoring tool below cells that run Spark jobs in a Jupyter notebook
@@ -29,6 +34,7 @@ SparkMonitor is an extension for Jupyter Lab that enables the live monitoring of
 -   A graph showing number of active tasks & executor cores vs time
 -   A notebook server extension that proxies the Spark UI and displays it in an iframe popup for more details
 -   For a detailed list of features see the use case [notebooks](https://krishnan-r.github.io/sparkmonitor/#common-use-cases-and-tests)
+-   Support for multiple SparkSessions (default port is 4040)
 -   [How it Works](https://krishnan-r.github.io/sparkmonitor/how.html)
 
 <table>
