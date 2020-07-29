@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 """SparkMonitor Jupyter Web Server Extension
-
 This module adds a custom request handler to Jupyter web server.
 It proxies the Spark Web UI by default running at 127.0.0.1:4040
 to the endpoint notebook_base_url/sparkmonitor
-
 TODO Create unique endpoints for different kernels or spark applications.
 """
 from __future__ import absolute_import
@@ -18,7 +16,10 @@ from bs4 import BeautifulSoup
 from notebook.base.handlers import IPythonHandler
 from tornado import httpclient
 
-proxy_root = '/sparkmonitor'
+proxy_root_base = '/sparkmonitor/'
+proxy_root = '/sparkmonitor/'
+
+PORT_PARSE = re.compile(r'[0-9]{4}')
 
 
 class SparkMonitorHandler(IPythonHandler):
@@ -26,24 +27,40 @@ class SparkMonitorHandler(IPythonHandler):
 
     async def get(self):
         """Handles get requests to the Spark UI
-
         Fetches the Spark Web UI from the configured ports
         """
         # print("SPARKMONITOR_SERVER: Handler GET")
         baseurl = os.environ.get('SPARKMONITOR_UI_HOST', '127.0.0.1')
-        port = os.environ.get('SPARKMONITOR_UI_PORT', '4040')
+
+        # Get the URL and grab the port
+        port_match = PORT_PARSE.findall(self.request.uri)
+        port = '4040' if not port_match else port_match[0]
+
+        proxy_root_path = proxy_root_base[:-1]
+
         url = 'http://' + baseurl + ':' + port
-        # print("SPARKMONITOR_SERVER: Request URI" + self.request.uri)
+        # print("SPARKMONITOR_SERVER: Request URI: " + self.request.uri)
         # print("SPARKMONITOR_SERVER: Getting from " + url)
+
         request_path = self.request.uri[(
-            self.request.uri.index(proxy_root) + len(proxy_root) + 1):]
+            self.request.uri.index(proxy_root_path) + len(proxy_root_path)):]
+
+        # Remove the /port (ie /4040, /4041 etc) from the request path because
+        # this is the path to the static js
+        request_path = request_path.replace(f'/{port}', '')
+
         self.replace_path = self.request.uri[:self.request.uri.index(
-            proxy_root) + len(proxy_root)]
-        # print("SPARKMONITOR_SERVER: Request_path " + request_path +
-        # " \n Replace_path:" + self.replace_path)
+            proxy_root_path) + len(proxy_root_path)] + '/' + port
+
+        print('SPARKMONITOR_SERVER: Request_path ' +
+              request_path + ' \n Replace_path:' + self.replace_path)
         backendurl = url_path_join(url, request_path)
         self.debug_url = url
         self.backendurl = backendurl
+
+        print('SPARKMONITOR_SERVER: backend_url: ' + self.backendurl)
+        print('SPARKMONITOR_SERVER: debug_url: ' + self.debug_url)
+
         http = httpclient.AsyncHTTPClient()
         try:
             response = await http.fetch(backendurl)
@@ -59,8 +76,7 @@ class SparkMonitorHandler(IPythonHandler):
             content = json.dumps({'error': 'SPARK_UI_NOT_RUNNING',
                                   'url': self.debug_url,
                                   'backendurl': self.backendurl,
-                                  'replace_path': self.replace_path
-                                  })
+                                  'replace_path': self.replace_path})
             print('SPARKMONITOR_SERVER: Spark UI not running')
         else:
             content_type = response.headers['Content-Type']
@@ -82,10 +98,9 @@ class SparkMonitorHandler(IPythonHandler):
 def load_jupyter_server_extension(nb_server_app):
     """
     Called when the Jupyter server extension is loaded.
-
     Args:
-        nb_server_app (NotebookWebApplication): handle
-            to the Notebook webserver instance.
+        nb_server_app (NotebookWebApplication): handle to the
+        Notebook webserver instance.
     """
     print('SPARKMONITOR_SERVER: Loading Server Extension')
     web_app = nb_server_app.web_app
@@ -96,7 +111,8 @@ def load_jupyter_server_extension(nb_server_app):
 
 
 try:
-    import lxml  # noqa
+    import lxml
+    lxml
 except ImportError:
     BEAUTIFULSOUP_BUILDER = 'html.parser'
 else:
@@ -112,7 +128,6 @@ PROXY_ATTRIBUTES = (
 
 def replace(content, root_url):
     """Replace all the links with our prefixed handler links,
-
      e.g.:
     /proxy/application_1467283586194_0015/static/styles.css" or
     /static/styles.css
@@ -132,7 +147,6 @@ def replace(content, root_url):
 
 def url_path_join(*pieces):
     """Join components of url into a relative url
-
     Use to prevent double slash when joining subpath. This will leave the
     initial and final / in place
     """

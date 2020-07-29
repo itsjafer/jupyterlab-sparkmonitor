@@ -1,6 +1,6 @@
 # Spark Monitor - An extension for Jupyter Lab
 
-This project was originally written by krishnan-r as a Google Summer of Code project for Jupyter Notebook. [Check his website out here.](https://krishnan-r.github.io/sparkmonitor/) 
+This project was originally written by krishnan-r as a Google Summer of Code project for Jupyter Notebook. [Check his website out here.](https://krishnan-r.github.io/sparkmonitor/)
 
 As a part of my internship as a Software Engineer at Yelp, I created this fork to update the extension to be compatible with JupyterLab - Yelp's choice for sharing and collaborating on notebooks.
 
@@ -23,13 +23,13 @@ SparkMonitor is an extension for Jupyter Lab that enables the live monitoring of
 
 ## Features
 
-- Automatically displays a live monitoring tool below cells that run Spark jobs in a Jupyter notebook
-- A table of jobs and stages with progressbars
-- A timeline which shows jobs, stages, and tasks
-- A graph showing number of active tasks & executor cores vs time
-- A notebook server extension that proxies the Spark UI and displays it in an iframe popup for more details
-- For a detailed list of features see the use case [notebooks](https://krishnan-r.github.io/sparkmonitor/#common-use-cases-and-tests)
-- [How it Works](https://krishnan-r.github.io/sparkmonitor/how.html)
+-   Automatically displays a live monitoring tool below cells that run Spark jobs in a Jupyter notebook
+-   A table of jobs and stages with progressbars
+-   A timeline which shows jobs, stages, and tasks
+-   A graph showing number of active tasks & executor cores vs time
+-   A notebook server extension that proxies the Spark UI and displays it in an iframe popup for more details
+-   For a detailed list of features see the use case [notebooks](https://krishnan-r.github.io/sparkmonitor/#common-use-cases-and-tests)
+-   [How it Works](https://krishnan-r.github.io/sparkmonitor/how.html)
 
 <table>
 <tr>
@@ -47,12 +47,15 @@ SparkMonitor is an extension for Jupyter Lab that enables the live monitoring of
 ## Quick Start
 
 ### To do a quick test of the extension
+
 This docker image has pyspark and several other related packages installed alongside the sparkmonitor extension.
+
 ```bash
 docker run -it -p 8888:8888 itsjafer/sparkmonitor
 ```
 
-### Setting up the extension 
+### Setting up the extension
+
 ```bash
 jupyter labextension install jupyterlab_sparkmonitor # install the jupyterlab extension
 pip install jupyterlab-sparkmonitor # install the server/kernel extension
@@ -63,7 +66,7 @@ ipython profile create --ipython-dir=.ipython
 echo "c.InteractiveShellApp.extensions.append('sparkmonitor.kernelextension')" >>  .ipython/profile_default/ipython_config.py
 
 # run jupyter lab
-IPYTHONDIR=.ipython jupyter lab --watch 
+IPYTHONDIR=.ipython jupyter lab --watch
 ```
 
 With the extension installed, a SparkConf object called `conf` will be usable from your notebooks. You can use it as follows:
@@ -82,6 +85,7 @@ sc.parallelize(range(0,100)).count()
 ```
 
 If you already have your own spark configuration, you will need to set `spark.extraListeners` to `sparkmonitor.listener.JupyterSparkMonitorListener` and `spark.driver.extraClassPath` to the path to the sparkmonitor python package `path/to/package/sparkmonitor/listener.jar`
+
 ```python
 from pyspark.sql import SparkSession
 spark = SparkSession.builder\
@@ -96,13 +100,12 @@ spark.sparkContext.parallelize(range(0,100)).count()
 spark.sparkContext.parallelize(range(0,100)).count()
 ```
 
-
 ## Development
 
 If you'd like to develop the extension:
 
 ```bash
-make venv # Creates a virtual environment using tox 
+make venv # Creates a virtual environment using tox
 source venv/bin/activate # Make sure we're using the virtual environment
 make build # Build the extension
 make develop # Run a local jupyterlab with the extension installed

@@ -24,7 +24,7 @@ export default class CellMonitor {
      */
     constructor(monitor, cell) {
         this.monitor = monitor; // Parent SparkMonitor instance
-        this.cell = cell; // Jupyter Cell instance
+        this.cell = cell;
         this.view = 'jobs'; // The current display tab -- "jobs" || "timeline" || "tasks"
         this.lastview = 'jobs'; // The previous display tab, used for restoring hidden display
         this.baseurl = ServerConnection.makeSettings().baseUrl;
@@ -155,7 +155,7 @@ export default class CellMonitor {
         iframe.find('.sparkuiframe').width('100%');
         iframe.find('.sparkuiframe').height('100%');
         iframe.dialog({
-            title: 'Spark UI 127.0.0.1:4040',
+            title: 'Spark UI',
             width: 1000,
             height: 500,
             autoResize: false,
@@ -180,7 +180,8 @@ export default class CellMonitor {
                 this.removeDisplay();
             });
             element.find('.sparkuitabbutton').click(() => {
-                this.openSparkUI('');
+                const port = prompt('Which Spark port?', '4040');
+                this.openSparkUI(`${port}/`);
             });
 
             element.find('.titlecollapse').click(() => {
