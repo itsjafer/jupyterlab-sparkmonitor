@@ -20,6 +20,9 @@ export default class CurrentCell {
     async init() {
         await this.nb_panel.revealed;
         this.notebook = this.nb_panel.content;
+
+        // Set the recordTiming setting to true
+        this.notebook.notebookConfig.recordTiming = true;
         this.registerCells();
         this.isReady.resolve(undefined);
     }

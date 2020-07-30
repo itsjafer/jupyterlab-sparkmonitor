@@ -35,5 +35,9 @@ lint: frontend-build
 	./node_modules/.bin/eslint js/*.js --fix
 
 itest:
-	docker build --tag itsjafer/sparkmonitor .
-	docker run -it -p 8888:8888 itsjafer/sparkmonitor
+	docker build --tag itsjafer/sparkmonitor:itest .
+	docker run --rm -p 8888:8888 -p 4040:4040 -e JUPYTER_ENABLE_LAB=yes itsjafer/sparkmonitor:itest
+
+publish:
+	./node_modules/.bin/webpack --mode=production
+	npm publish
