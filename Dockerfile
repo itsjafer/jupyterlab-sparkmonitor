@@ -1,4 +1,4 @@
-FROM jupyter/pyspark-notebook
+FROM jupyter/pyspark-notebook:bca04790b492
 
 USER root
 RUN chown -R jovyan:users /home/jovyan
@@ -8,8 +8,9 @@ ADD .ipython ./.ipython
 ENV IPYTHONDIR ./.ipython
 
 # install the extensions
-RUN pip install jupyterlab-sparkmonitor==1.0.5 jupyterlab==1.2.0 jupyter==1.0.0
-RUN jupyter labextension install jupyterlab_sparkmonitor@1.0.5
+RUN pip install --upgrade jupyterlab==2.2.0
+RUN pip install jupyterlab-sparkmonitor==2.0.1
+RUN jupyter labextension install jupyterlab_sparkmonitor@2.0.1 --minimize=False
 RUN jupyter labextension enable jupyterlab_sparkmonitor
 RUN jupyter serverextension enable --py sparkmonitor
 
