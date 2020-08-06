@@ -106,6 +106,11 @@ spark.sparkContext.parallelize(range(0,100)).count()
 spark.sparkContext.parallelize(range(0,100)).count()
 ```
 
+## Changelog
+
+* 1.0 - Initial Release
+* 2.0 - Migration to JupyterLab 2, Multiple Spark Sessions, and displaying monitors beneath the correct cell more accurately
+
 ## Development
 
 If you'd like to develop the extension:
