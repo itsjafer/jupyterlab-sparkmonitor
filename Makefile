@@ -8,6 +8,7 @@ venv: requirements-dev.txt tox.ini
 
 .PHONY: frontend-build
 frontend-build:
+	venv/bin/jlpm build
 	venv/bin/jupyter labextension install .
 	./node_modules/.bin/babel js/ -d lib/ --verbose
 	./node_modules/.bin/flow-copy-source js lib
@@ -15,6 +16,7 @@ frontend-build:
 .PHONY: build
 build: venv frontend-build
 	ipython profile create --ipython-dir=.ipython
+	sed -i '/c.InteractiveShellApp.extensions.append/d' .ipython/profile_default/ipython_config.py
 	echo "c.InteractiveShellApp.extensions.append('sparkmonitor.kernelextension')" >>  .ipython/profile_default/ipython_config.py
 	venv/bin/pip install -I .
 	venv/bin/jupyter labextension enable jupyterlab_sparkmonitor
