@@ -63,8 +63,8 @@ docker run -it -p 8888:8888 itsjafer/sparkmonitor
 ### Setting up the extension
 
 ```bash
+pip install jupyterlab-sparkmonitor[pyspark] # install the server/kernel extension. Remove [pyspark] part if you already have Spark installed
 jupyter labextension install jupyterlab_sparkmonitor # install the jupyterlab extension
-pip install jupyterlab-sparkmonitor # install the server/kernel extension
 jupyter serverextension enable --py sparkmonitor
 
 # set up ipython profile and add our kernel extension to it

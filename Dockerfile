@@ -9,7 +9,7 @@ ENV IPYTHONDIR ./.ipython
 
 # install the extensions
 RUN pip install --upgrade jupyterlab==2.2.0
-RUN pip install jupyterlab-sparkmonitor==2.0.1
+RUN pip install jupyterlab-sparkmonitor[pyspark]==2.0.1
 RUN jupyter labextension install jupyterlab_sparkmonitor@2.0.1 --minimize=False
 RUN jupyter labextension enable jupyterlab_sparkmonitor
 RUN jupyter serverextension enable --py sparkmonitor
