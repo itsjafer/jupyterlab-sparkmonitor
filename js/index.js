@@ -7,7 +7,7 @@ import 'jquery-ui-bundle';
 import 'jquery-ui-bundle/jquery-ui.css';
 import { INotebookTracker } from '@jupyterlab/notebook';
 import { IMainMenu } from '@jupyterlab/mainmenu';
-import { Menu } from '@phosphor/widgets';
+import { Menu } from '@lumino/widgets';
 import SparkMonitor from './SparkMonitor';
 
 /** Entrypoint: Called when the extension is loaded by jupyter. */

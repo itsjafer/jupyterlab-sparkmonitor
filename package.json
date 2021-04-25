@@ -1,6 +1,6 @@
 {
-  "name": "jupyterlab_sparkmonitor",
-  "version": "2.0.1",
+  "name": "jupyterlab-sparkmonitor",
+  "version": "3.0.1",
   "description": "Jupyter Lab extension to monitor Apache Spark Jobs",
   "repository": {
     "type": "git",
@@ -13,8 +13,14 @@
     "Spark",
     "sparkmonitor"
   ],
-  "author": "Krishnan R",
-  "maintainer": "itsjafer",
+  "main": "lib/index.js",
+  "author": {
+    "name": "Krishnan R",
+    "email": "krishnanr1997@gmail.com"
+  },
+  "maintainers": [
+    {"name": "itsjafer", "email": "itsjafer@gmail.com"}
+  ],
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/itsjafer/jupyterlab-sparkmonitor/issues"
@@ -56,7 +62,14 @@
     "webpack-cli": "^3.3.10"
   },
   "scripts": {
-    "build": "webpack"
+    "build": "jlpm run build:lib && jlpm run build:labextension",
+    "build:lib": "webpack",
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
+    "clean": "rimraf lib jupyterlab_sparkmonior:labextension",
+    "clean:all": "jlpm run clean:lib && jlpm run clean:labextension",
+    "eslint": "eslint js/*.js --fix",
+    "eslint:check": "eslint ."
   },
   "dependencies": {
     "@jupyterlab/application": "^3.0.4",
@@ -77,15 +90,14 @@
     "plotly.js": "^1.51.1",
     "uuid": "^7.0.2",
     "vis-timeline": "^7.3.4",
-    "webpack": "^4.46.0"
+    "webpack": "^5.33.2"
   },
   "jupyterlab": {
-    "extension": "dist/index",
-    "outputDir": "jupyterlab-sparkmonitor/labextension"
+    "extension": "lib/index",
+    "outputDir": "sparkmonitor/labextension"
   },
   "files": [
     "lib/*",
-    "js/*",
-    "dist/*"
+    "js/*"
   ]
 }

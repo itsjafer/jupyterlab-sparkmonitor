@@ -3,26 +3,20 @@ all: clean build develop
 
 .PHONY: venv
 venv: requirements-dev.txt tox.ini
+	# install python dependencies
 	tox -e venv
+	# install npm dependencies
+	venv/bin/jlpm install
 	. venv/bin/activate
 
-.PHONY: frontend-build
-frontend-build:
-	venv/bin/jlpm build
-	venv/bin/jupyter labextension install .
-	./node_modules/.bin/babel js/ -d lib/ --verbose
-	./node_modules/.bin/flow-copy-source js lib
-
 .PHONY: build
-build: venv frontend-build
-	ipython profile create --ipython-dir=.ipython
-	sed -i '/c.InteractiveShellApp.extensions.append/d' .ipython/profile_default/ipython_config.py
-	echo "c.InteractiveShellApp.extensions.append('sparkmonitor.kernelextension')" >>  .ipython/profile_default/ipython_config.py
+build: venv
+	venv/bin/jlpm build
 	venv/bin/pip install -I .
-	venv/bin/jupyter labextension enable jupyterlab_sparkmonitor
-	venv/bin/jupyter serverextension enable --py sparkmonitor
 
 develop:
+	ipython profile create --ipython-dir=.ipython
+	echo "c.InteractiveShellApp.extensions.append('sparkmonitor.kernelextension')" >>  .ipython/profile_default/ipython_config.py
 	IPYTHONDIR=.ipython venv/bin/jupyter lab --watch
 
 .PHONY: clean
@@ -34,12 +28,13 @@ clean:
 
 .PHONY: lint
 lint: frontend-build
-	./node_modules/.bin/eslint js/*.js --fix
+	venv/bin/jlpm run lint
 
-itest:
-	docker build --tag itsjafer/sparkmonitor:itest .
+dist: build
+	rm -rf dist/
+	venv/bin/python setup.py bdist_wheel
+
+.PHONY: itest
+itest: dist
+	docker build --tag itsjafer/sparkmonitor:itest --build-arg VERSION=$$(venv/bin/python setup.py --version) .
 	docker run --rm -p 8888:8888 -p 4040:4040 -e JUPYTER_ENABLE_LAB=yes itsjafer/sparkmonitor:itest
-
-publish:
-	./node_modules/.bin/webpack --mode=production
-	npm publish

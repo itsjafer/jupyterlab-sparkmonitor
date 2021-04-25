@@ -1,2 +1,24 @@
 recursive-include sparkmonitor *.jar
 include VERSION
+
+include LICENSE
+include README.md
+include pyproject.toml
+include jupyter-config/jupytarlab_sparkmonitor.json
+
+include package.json
+include install.json
+include yarn.lock
+
+graft sparkmonitor/labextension
+
+# Javascript files
+graft js
+prune **/node_modules
+
+# Patterns to exclude from any directory
+global-exclude *~
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude .git
+global-exclude .ipynb_checkpoints
