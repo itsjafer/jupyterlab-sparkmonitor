@@ -63,9 +63,7 @@ docker run -it -p 8888:8888 itsjafer/sparkmonitor
 ### Setting up the extension
 
 ```bash
-pip install jupyterlab-sparkmonitor[pyspark] # install the server/kernel extension. Remove [pyspark] part if you already have Spark installed
-jupyter labextension install jupyterlab_sparkmonitor # install the jupyterlab extension
-jupyter serverextension enable --py sparkmonitor
+pip install jupyterlab-sparkmonitor # install the extension
 
 # set up ipython profile and add our kernel extension to it
 ipython profile create --ipython-dir=.ipython
@@ -110,7 +108,7 @@ spark.sparkContext.parallelize(range(0,100)).count()
 
 * 1.0 - Initial Release
 * 2.0 - Migration to JupyterLab 2, Multiple Spark Sessions, and displaying monitors beneath the correct cell more accurately
-
+* 3.0 - Migrate to JupyterLab 3 as prebuilt extension
 ## Development
 
 If you'd like to develop the extension:

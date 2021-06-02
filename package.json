@@ -1,6 +1,6 @@
 {
-  "name": "jupyterlab_sparkmonitor",
-  "version": "2.0.1",
+  "name": "jupyterlab-sparkmonitor",
+  "version": "3.0.1",
   "description": "Jupyter Lab extension to monitor Apache Spark Jobs",
   "repository": {
     "type": "git",
@@ -13,14 +13,23 @@
     "Spark",
     "sparkmonitor"
   ],
-  "author": "Krishnan R",
-  "maintainer": "itsjafer",
+  "main": "lib/index.js",
+  "author": {
+    "name": "Krishnan R",
+    "email": "krishnanr1997@gmail.com"
+  },
+  "maintainers": [
+    {"name": "itsjafer", "email": "itsjafer@gmail.com"}
+  ],
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/itsjafer/jupyterlab-sparkmonitor/issues"
   },
   "homepage": "https://github.com/itsjafer/jupyterlab-sparkmonitor#readme",
   "devDependencies": {
+    "@jupyterlab/builder": "^3.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.8.1",
+    "@typescript-eslint/parser": "^4.8.1",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.25.0",
     "babel-eslint": "^10.1.0",
@@ -28,14 +37,14 @@
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-preset-env": "^1.6.0",
     "css-loader": "^0.28.4",
-    "eslint": "^6.8.0",
+    "eslint": "^7.14.0",
     "eslint-config-airbnb": "^18.1.0",
-    "eslint-config-prettier": "^6.10.1",
+    "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-flowtype": "^4.7.0",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-monorepo": "^0.2.1",
-    "eslint-plugin-prettier": "^3.1.3",
+    "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.19.0",
     "eslint-plugin-react-hooks": "^2.5.1",
     "file-loader": "^6.0.0",
@@ -44,26 +53,34 @@
     "ify-loader": "^1.0.4",
     "ink-docstrap": "^1.3.0",
     "jsdoc": "^3.5.4",
-    "prettier": "^1.19.1",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.1.1",
+    "rimraf": "^3.0.2",
     "style-loader": "^0.18.2",
+    "typescript": "~4.1.3",
     "url-loader": "^0.5.9",
     "webpack-cli": "^3.3.10"
   },
   "scripts": {
-    "build": "webpack"
+    "build": "jlpm run build:lib && jlpm run build:labextension",
+    "build:lib": "webpack",
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
+    "clean": "rimraf lib jupyterlab_sparkmonior:labextension",
+    "clean:all": "jlpm run clean:lib && jlpm run clean:labextension",
+    "eslint": "eslint js/*.js --fix",
+    "eslint:check": "eslint ."
   },
   "dependencies": {
-    "@jupyterlab/application": "^2.0.2",
-    "@jupyterlab/cells": "^2.0.2",
-    "@jupyterlab/coreutils": "^4.1.0",
-    "@jupyterlab/docregistry": "^2.0.2",
-    "@jupyterlab/mainmenu": "^2.1.0",
-    "@jupyterlab/notebook": "^2.0.2",
-    "@jupyterlab/services": "^5.1.0",
-    "@lumino/coreutils": "^1.4.2",
-    "@lumino/widgets": "^1.11.1",
-    "@phosphor/coreutils": "^1.3.1",
-    "@phosphor/widgets": "^1.9.3",
+    "@jupyterlab/application": "^3.0.4",
+    "@jupyterlab/cells": "^3.0.4",
+    "@jupyterlab/coreutils": "^5.0.2",
+    "@jupyterlab/docregistry": "^3.0.4",
+    "@jupyterlab/mainmenu": "^3.0.3",
+    "@jupyterlab/notebook": "^3.0.4",
+    "@jupyterlab/services": "^6.0.3",
+    "@lumino/coreutils": "^1.5.3",
+    "@lumino/widgets": "^1.16.1",
     "es6-promise": "^4.2.8",
     "jquery": "^3.4.1",
     "jquery-ui-bundle": "^1.12.1-migrate",
@@ -73,14 +90,14 @@
     "plotly.js": "^1.51.1",
     "uuid": "^7.0.2",
     "vis-timeline": "^7.3.4",
-    "webpack": "^4.44.0"
+    "webpack": "^5.33.2"
   },
   "jupyterlab": {
-    "extension": "dist/index"
+    "extension": "lib/index",
+    "outputDir": "sparkmonitor/labextension"
   },
   "files": [
     "lib/*",
-    "js/*",
-    "dist/*"
+    "js/*"
   ]
 }

@@ -2,6 +2,7 @@
 *.pyc
 *.log
 **/.ipynb_checkpoints/
+sparkmonitor/labextension
 scalalistener/project/
 scalalistener/target/
 *.egg-info/
