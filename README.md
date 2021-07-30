@@ -23,7 +23,7 @@ SparkMonitor is an extension for Jupyter Lab that enables the live monitoring of
 
 ### Requirements
 
--   At least JupyterLab 2.0.0 (necessary to get cell execution metadata)
+-   At least JupyterLab 3
 -   pyspark 2.X.X or older (pyspark 3.X is currently not supported)
 
 ## Features
