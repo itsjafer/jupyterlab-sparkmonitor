@@ -1,3 +1,5 @@
+.ONESHELL:
+
 .PHONY: all
 all: clean build develop
 
@@ -12,7 +14,7 @@ venv: requirements-dev.txt tox.ini
 .PHONY: build
 build: venv
 	venv/bin/jlpm build
-	venv/bin/pip install -I .
+	PIP_USER=false venv/bin/pip install -I .
 
 develop:
 	ipython profile create --ipython-dir=.ipython
@@ -28,7 +30,7 @@ clean:
 
 .PHONY: lint
 lint: frontend-build
-	venv/bin/jlpm run lint
+	venv/bin/jlpm run eslint
 
 dist: build
 	rm -rf dist/

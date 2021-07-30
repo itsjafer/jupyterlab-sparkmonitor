@@ -1,3 +1,4 @@
 jupyter
 jupyterlab
 pre-commit
+tox
