@@ -24,7 +24,7 @@ SparkMonitor is an extension for Jupyter Lab that enables the live monitoring of
 ### Requirements
 
 -   At least JupyterLab 3
--   pyspark 2.X.X or older (pyspark 3.X is currently not supported)
+-   pyspark 3.X.X or newer (For compatibility with older pyspark versions, use jupyterlab-sparkmonitor 3.X)
 
 ## Features
 
@@ -109,13 +109,12 @@ spark.sparkContext.parallelize(range(0,100)).count()
 * 1.0 - Initial Release
 * 2.0 - Migration to JupyterLab 2, Multiple Spark Sessions, and displaying monitors beneath the correct cell more accurately
 * 3.0 - Migrate to JupyterLab 3 as prebuilt extension
+* 4.0 - pyspark 3.X Compatibility; no longer compatible with PySpark 2.X or under
+
 ## Development
 
 If you'd like to develop the extension:
 
 ```bash
-make venv # Creates a virtual environment using tox
-source venv/bin/activate # Make sure we're using the virtual environment
-make build # Build the extension
-make develop # Run a local jupyterlab with the extension installed
+make all # Clean the directory, build the extension, and run it locally
 ```

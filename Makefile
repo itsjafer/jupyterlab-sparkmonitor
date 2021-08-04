@@ -5,6 +5,7 @@ all: clean build develop
 
 .PHONY: venv
 venv: requirements-dev.txt tox.ini
+	pip install -r requirements-dev.txt
 	# install python dependencies
 	tox -e venv
 	# install npm dependencies
@@ -19,7 +20,7 @@ build: venv
 develop:
 	ipython profile create --ipython-dir=.ipython
 	echo "c.InteractiveShellApp.extensions.append('sparkmonitor.kernelextension')" >>  .ipython/profile_default/ipython_config.py
-	IPYTHONDIR=.ipython venv/bin/jupyter lab --watch
+	IPYTHONDIR=.ipython venv/bin/jupyter lab --watch --NotebookApp.allow_origin='*'
 
 .PHONY: clean
 clean:

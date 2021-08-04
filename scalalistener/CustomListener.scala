@@ -30,9 +30,12 @@ import java.io._
  */
 class JupyterSparkMonitorListener(conf: SparkConf) extends SparkListener {
 
-  println("SPARKMONITOR_LISTENER: Started SparkListener for Jupyter Notebook")
+  // println("SPARKMONITOR_LISTENER: Started SparkListener for Jupyter Notebook")
   val port = scala.util.Properties.envOrElse("SPARKMONITOR_KERNEL_PORT", "ERRORNOTFOUND")
-  println("SPARKMONITOR_LISTENER: Port obtained from environment: " + port)
+
+  val version = scala.util.Properties.versionString
+  // println("SPARKMONITOR_LISTENER: Version: " + version)
+  // println("SPARKMONITOR_LISTENER: Port obtained from environment: " + port)
   var socket: Socket = null
   var out: OutputStreamWriter = null
   // Open the socket to the kernel. The kernel is the server already waiting for connections.
@@ -57,7 +60,7 @@ class JupyterSparkMonitorListener(conf: SparkConf) extends SparkListener {
 
   /** Close the socket connection to the kernel.*/
   def closeConnection(): Unit = {
-    println("SPARKMONITOR_LISTENER: Closing Connection")
+    // println("SPARKMONITOR_LISTENER: Closing Connection")
     out.close()
     socket.close()
   }
@@ -112,7 +115,7 @@ class JupyterSparkMonitorListener(conf: SparkConf) extends SparkListener {
   override def onApplicationStart(appStarted: SparkListenerApplicationStart): Unit = {
     startTime = appStarted.time
     appId = appStarted.appId.getOrElse("null")
-    println("SPARKMONITOR_LISTENER: Application Started: " + appId + " ...Start Time: " + appStarted.time)
+    // println("SPARKMONITOR_LISTENER: Application Started: " + appId + " ...Start Time: " + appStarted.time)
     val json = ("msgtype" -> "sparkApplicationStart") ~
       ("startTime" -> startTime) ~
       ("appId" -> appId) ~
@@ -129,7 +132,7 @@ class JupyterSparkMonitorListener(conf: SparkConf) extends SparkListener {
    * Closes the socket connection to the kernel.
    */
   override def onApplicationEnd(appEnded: SparkListenerApplicationEnd): Unit = {
-    println("SPARKMONITOR_LISTENER: Application ending...End Time: " + appEnded.time)
+    // println("SPARKMONITOR_LISTENER: Application ending...End Time: " + appEnded.time)
     endTime = appEnded.time
     val json = ("msgtype" -> "sparkApplicationEnd") ~
       ("endTime" -> endTime)
@@ -143,8 +146,9 @@ class JupyterSparkMonitorListener(conf: SparkConf) extends SparkListener {
     val completionTime: Long = stageInfo.completionTime.getOrElse(-1)
     val submissionTime: Long = stageInfo.submissionTime.getOrElse(-1)
 
+    var attemptId = stageInfo.attemptNumber
     (stageInfo.stageId.toString ->
-      ("attemptId" -> stageInfo.attemptId) ~
+      ("attemptId" -> attemptId) ~
       ("name" -> stageInfo.name) ~
       ("numTasks" -> stageInfo.numTasks) ~
       ("completionTime" -> completionTime) ~
@@ -191,8 +195,9 @@ class JupyterSparkMonitorListener(conf: SparkConf) extends SparkListener {
     // If there's no information for a stage, store the StageInfo received from the scheduler
     // so that we can display stage descriptions for pending stages:
     for (stageInfo <- jobStart.stageInfos) {
+      var attemptId = stageInfo.attemptNumber
       stageIdToInfo.getOrElseUpdate(stageInfo.stageId, stageInfo)
-      stageIdToData.getOrElseUpdate((stageInfo.stageId, stageInfo.attemptId), new StageUIData)
+      stageIdToData.getOrElseUpdate((stageInfo.stageId, attemptId), new StageUIData)
     }
     val name = jobStart.properties.getProperty("callSite.short", "null")
     // println("Num Executors" + numExecutors.toInt)
@@ -215,7 +220,7 @@ class JupyterSparkMonitorListener(conf: SparkConf) extends SparkListener {
   /** Called when a job ends. */
   override def onJobEnd(jobEnd: SparkListenerJobEnd): Unit = synchronized {
     val jobData = activeJobs.remove(jobEnd.jobId).getOrElse {
-      println("SPARKMONITOR_LISTENER: Job completed for unknown job: " + jobEnd.jobId)
+      // println("SPARKMONITOR_LISTENER: Job completed for unknown job: " + jobEnd.jobId)
       new JobUIData(jobId = jobEnd.jobId)
     }
     jobData.completionTime = Option(jobEnd.time).filter(_ >= 0)
@@ -265,8 +270,10 @@ class JupyterSparkMonitorListener(conf: SparkConf) extends SparkListener {
   override def onStageCompleted(stageCompleted: SparkListenerStageCompleted): Unit = synchronized {
     val stage = stageCompleted.stageInfo
     stageIdToInfo(stage.stageId) = stage
-    val stageData = stageIdToData.getOrElseUpdate((stage.stageId, stage.attemptId), {
-      println("SPARKMONITOR_LISTENER: Stage completed for unknown stage " + stage.stageId)
+
+    var attemptId = stage.attemptNumber
+    val stageData = stageIdToData.getOrElseUpdate((stage.stageId, attemptId), {
+      // println("SPARKMONITOR_LISTENER: Stage completed for unknown stage " + stage.stageId)
       new StageUIData
     })
     var status = "UNKNOWN"
@@ -298,9 +305,10 @@ class JupyterSparkMonitorListener(conf: SparkConf) extends SparkListener {
     }
     val completionTime: Long = stage.completionTime.getOrElse(-1)
     val submissionTime: Long = stage.submissionTime.getOrElse(-1)
+    attemptId = stage.attemptNumber
     val json = ("msgtype" -> "sparkStageCompleted") ~
       ("stageId" -> stage.stageId) ~
-      ("stageAttemptId" -> stage.attemptId) ~
+      ("stageAttemptId" -> attemptId) ~
       ("completionTime" -> completionTime) ~
       ("submissionTime" -> submissionTime) ~
       ("numTasks" -> stage.numTasks) ~
@@ -316,7 +324,8 @@ class JupyterSparkMonitorListener(conf: SparkConf) extends SparkListener {
     activeStages(stage.stageId) = stage
     pendingStages.remove(stage.stageId)
     stageIdToInfo(stage.stageId) = stage
-    val stageData = stageIdToData.getOrElseUpdate((stage.stageId, stage.attemptId), new StageUIData)
+    var attemptId = stage.attemptNumber
+    val stageData = stageIdToData.getOrElseUpdate((stage.stageId, attemptId), new StageUIData)
     stageData.description = Option(stageSubmitted.properties).flatMap {
       p => Option(p.getProperty("spark.job.description"))
     }
@@ -333,9 +342,10 @@ class JupyterSparkMonitorListener(conf: SparkConf) extends SparkListener {
     val activeJobsDependentOnStage = stageIdToActiveJobIds.get(stage.stageId)
     val jobIds = activeJobsDependentOnStage
     val submissionTime: Long = stage.submissionTime.getOrElse(-1)
+    attemptId = stage.attemptNumber
     val json = ("msgtype" -> "sparkStageSubmitted") ~
       ("stageId" -> stage.stageId) ~
-      ("stageAttemptId" -> stage.attemptId) ~
+      ("stageAttemptId" -> attemptId) ~
       ("name" -> stage.name) ~
       ("numTasks" -> stage.numTasks) ~
       //  ("details" -> stage.details) ~
@@ -351,7 +361,7 @@ class JupyterSparkMonitorListener(conf: SparkConf) extends SparkListener {
     val taskInfo = taskStart.taskInfo
     if (taskInfo != null) {
       val stageData = stageIdToData.getOrElseUpdate((taskStart.stageId, taskStart.stageAttemptId), {
-        println("SPARKMONITOR_LISTENER: Task start for unknown stage " + taskStart.stageId)
+        // println("SPARKMONITOR_LISTENER: Task start for unknown stage " + taskStart.stageId)
         new StageUIData
       })
       stageData.numActiveTasks += 1
@@ -400,7 +410,7 @@ class JupyterSparkMonitorListener(conf: SparkConf) extends SparkListener {
     var errorMessage: Option[String] = None
     if (info != null && taskEnd.stageAttemptId != -1) {
       val stageData = stageIdToData.getOrElseUpdate((taskEnd.stageId, taskEnd.stageAttemptId), {
-        println("SPARKMONITOR_LISTENER: Task end for unknown stage " + taskEnd.stageId)
+        // println("SPARKMONITOR_LISTENER: Task end for unknown stage " + taskEnd.stageId)
         new StageUIData
       })
       stageData.numActiveTasks -= 1
@@ -526,7 +536,8 @@ class JupyterSparkMonitorListener(conf: SparkConf) extends SparkListener {
     if (stages.size > retainedStages) {
       val toRemove = calculateNumberToRemove(stages.size, retainedStages)
       stages.take(toRemove).foreach { s =>
-        stageIdToData.remove((s.stageId, s.attemptId))
+        var attemptId = s.attemptNumber
+        stageIdToData.remove((s.stageId, attemptId))
         stageIdToInfo.remove(s.stageId)
       }
       stages.trimStart(toRemove)

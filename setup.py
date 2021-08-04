@@ -59,7 +59,7 @@ setup(
         "jupyter_packaging~=0.9,<2",
     ],
     extras_require={
-      "pyspark": ["pyspark<3.0.0"]
+      "pyspark": ["pyspark>3.0.0"]
     },
     platforms="Linux, Mac OS X, Windows",
     keywords=["Jupyter", "JupyterLab", "JupyterLab3"],
