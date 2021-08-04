@@ -41,6 +41,7 @@ class ScalaMonitor:
         ipython is the instance of ZMQInteractiveShell
         """
         self.ipython = ipython
+        self.comm = None
 
     def start(self):
         """Creates the socket thread and returns assigned port"""
@@ -53,7 +54,8 @@ class ScalaMonitor:
 
     def send(self, msg):
         """Send a message to the frontend"""
-        self.comm.send(msg)
+        if self.comm:
+            self.comm.send(msg)
 
     def handle_comm_message(self, msg):
         """Handle message received from frontend
