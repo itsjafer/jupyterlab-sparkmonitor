@@ -1,4 +1,4 @@
-pip==19.2
+pip==21.1
 pip-custom-platform==0.5.0
 pymonkey==0.3.1
 setuptools==39.0.1
