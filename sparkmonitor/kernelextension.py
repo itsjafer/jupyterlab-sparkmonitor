@@ -155,17 +155,29 @@ def load_ipython_extension(ipython):
     global ip, monitor  # For Debugging
 
     global logger
+
     logger = logging.getLogger('sparkmonitorkernel')
-    logger.setLevel(logging.DEBUG)
+
+    if os.environ.get("SPARKMONITOR_LOG_LEVEL") is not None:
+        log_level = os.environ.get("SPARKMONITOR_LOG_LEVEL", "INFO")
+        if log_level.lower() not in ["debug", "info", "warning", "error", "critical"]:
+            log_level = "INFO"
+    else:
+        logger.setLevel(log_level)
+
     logger.propagate = False
-    # For debugging this module - Writes logs to a file
-    fh = logging.FileHandler('sparkmonitor_kernelextension.log', mode='w')
-    fh.setLevel(logging.DEBUG)
+
+    if os.environ.get("SPARKMONITOR_LOG_HANDLER", "file").lower() == "file":
+        handler = logging.FileHandler('sparkmonitor_kernelextension.log', mode='w')
+    else:
+        handler = logging.StreamHandler(sys.stdout)
+
+    handler.setLevel(log_level)
     formatter = logging.Formatter(
         '%(levelname)s:  %(asctime)s - %(name)s - %(process)d - %(processName)s - \
-        %(thread)d - %(threadName)s\n %(message)s \n')
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
+        %(thread)d - %(threadName)s - %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
 
     if ipykernel_imported:
         if not isinstance(ipython, zmqshell.ZMQInteractiveShell):
