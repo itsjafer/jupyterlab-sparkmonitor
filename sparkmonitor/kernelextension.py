@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """SparkMonitor IPython Kernel Extension
-
 Receives data from listener and forwards to frontend.
 Adds a configuration object to users namespace.
 """
@@ -9,6 +8,7 @@ from __future__ import unicode_literals
 
 import logging
 import os
+import sys
 import socket
 from threading import Thread
 
@@ -37,7 +37,6 @@ class ScalaMonitor:
 
     def __init__(self, ipython):
         """Constructor
-
         ipython is the instance of ZMQInteractiveShell
         """
         self.ipython = ipython
@@ -59,7 +58,6 @@ class ScalaMonitor:
 
     def handle_comm_message(self, msg):
         """Handle message received from frontend
-
         Does nothing for now as this only works if kernel is not busy.
         """
         logger.info('COMM MESSAGE:  \n %s', str(msg))
@@ -103,7 +101,6 @@ class SocketThread(Thread):
 
     def run(self):
         """Overrides Thread.run
-
         Creates a socket and waits(blocking) for connections
         When a connection is closed, goes back into waiting.
         """
@@ -149,23 +146,34 @@ class SocketThread(Thread):
 
 def load_ipython_extension(ipython):
     """Entrypoint, called when the extension is loaded.
-
     ipython is the InteractiveShell instance
     """
     global ip, monitor  # For Debugging
 
     global logger
+
     logger = logging.getLogger('sparkmonitorkernel')
-    logger.setLevel(logging.DEBUG)
+
+    if os.environ.get("SPARKMONITOR_LOG_LEVEL") is not None:
+        log_level = os.environ.get("SPARKMONITOR_LOG_LEVEL", "INFO")
+        if log_level.lower() not in ["debug", "info", "warning", "error", "critical"]:
+            log_level = "INFO"
+    else:
+        logger.setLevel(log_level)
+
     logger.propagate = False
-    # For debugging this module - Writes logs to a file
-    fh = logging.FileHandler('sparkmonitor_kernelextension.log', mode='w')
-    fh.setLevel(logging.DEBUG)
+
+    if os.environ.get("SPARKMONITOR_LOG_HANDLER", "file").lower() == "file":
+        handler = logging.FileHandler('sparkmonitor_kernelextension.log', mode='w')
+    else:
+        handler = logging.StreamHandler(sys.stdout)
+
+    handler.setLevel(log_level)
     formatter = logging.Formatter(
         '%(levelname)s:  %(asctime)s - %(name)s - %(process)d - %(processName)s - \
-        %(thread)d - %(threadName)s\n %(message)s \n')
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
+        %(thread)d - %(threadName)s - %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
 
     if ipykernel_imported:
         if not isinstance(ipython, zmqshell.ZMQInteractiveShell):
@@ -203,7 +211,6 @@ def unload_ipython_extension(ipython):
 
 def configure(conf):
     """Configures the provided conf object.
-
     Sets the Java Classpath and listener jar file path to "conf".
     Also sets an environment variable for ports for communication
     with scala listener.
