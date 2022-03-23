@@ -158,7 +158,7 @@ def load_ipython_extension(ipython):
 
     logger = logging.getLogger('sparkmonitorkernel')
 
-    log_level = os.environ.get("SPARKMONITOR_LOG_LEVEL", "INFO")
+    log_level = os.environ.get("SPARKMONITOR_LOG_LEVEL", "WARNING")
     if log_level.upper() not in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
         log_level = "INFO"
     logger.setLevel(log_level)
